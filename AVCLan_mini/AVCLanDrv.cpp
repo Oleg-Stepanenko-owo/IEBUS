@@ -55,7 +55,7 @@ void AVCLanDrv::begin ()
 #endif
   headAddress   = 0x0000;
   deviceAddress = 0x0000;
-//  event         = EV_NONE;
+  //  event         = EV_NONE;
   actionID      = ACT_NONE;
 }
 
@@ -94,7 +94,7 @@ word AVCLanDrv::readBits (byte nbBits)
 
   //  char buff[10] = {0};
   //  sprintf(buff, "%x", data );
-  //  bSDLog.logs( buff );
+  //  // bSDLog.logs( buff );
   return data;
 }
 
@@ -530,7 +530,7 @@ bool AVCLanDrv::isAvcBusFree (void)
 void AVCLanDrv::printMessage(bool incoming)
 //--------------------------------------------------------------------------------
 {
-  if(!bSDLog.bRedyToLog) return;
+  if (!bSDLog.bRedyToLog) return;
 
   char sss[15] = {0};
   sprintf(sss, "[%u]", millis());
@@ -562,7 +562,7 @@ void AVCLanDrv::printMessage(bool incoming)
     bSDLog.printHex8((uint8_t)message[i]);
   }
   bSDLog.println();
-  //  bSDLog._update();
+  // bSDLog._update();
 }
 
 // Use the last received message to determine the corresponding action ID
@@ -580,10 +580,10 @@ byte AVCLanDrv::getActionID(const AvcInCmdTable messageTable[], byte mtSize)
   byte idx = ((dataSize == 8) ? 0 : (dataSize == 9 ? 4 : 7)); // position in AvcInMessageTable
 
   for (; idx < mtSize; ++idx) {
-      if (dataSize != pgm_read_byte_near(&messageTable[idx].dataSize)) return ACT_NONE; // Because first unsized value from other range
+    if (dataSize != pgm_read_byte_near(&messageTable[idx].dataSize)) return ACT_NONE; // Because first unsized value from other range
 
-      if ( message[dataSize - 1] == pgm_read_byte_near(&messageTable[idx].command) )
-          return pgm_read_byte_near( &messageTable[idx].actionID );
+    if ( message[dataSize - 1] == pgm_read_byte_near(&messageTable[idx].command) )
+      return pgm_read_byte_near( &messageTable[idx].actionID );
   }
   return ACT_NONE;
 }
