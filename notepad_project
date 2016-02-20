@@ -1,0 +1,12 @@
+<NotepadPlus>
+    <Project name="IE_BUS">
+        <File name="AVCLan_mini\AVCLanDrv.cpp" />
+        <File name="AVCLan_mini\AVCLanDrv.h" />
+        <File name="AVCLan_mini\AVCLanHonda.cpp" />
+        <File name="AVCLan_mini\AVCLanHonda.h" />
+        <File name="AVCLan_mini\AVCLan_mini.ino" />
+        <File name="AVCLan_mini\config.h" />
+        <File name="AVCLan_mini\SD_Log.cpp" />
+        <File name="AVCLan_mini\SD_Log.h" />
+    </Project>
+</NotepadPlus>

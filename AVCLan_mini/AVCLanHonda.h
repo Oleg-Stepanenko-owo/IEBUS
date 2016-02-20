@@ -28,10 +28,10 @@
 
 
 #define AVCLANDEVICE_NAME    " Honda Kb1"
-#define AVCLANDEVICE_VERSION "0.0.6"
+#define AVCLANDEVICE_VERSION "0.0.7"
 
-#define BUTT_WAIT 700
-#define LOCK_TIME 2000
+#define BUTT_WAIT 1000
+#define LOCK_TIME 700
 
 //--------------------------------------------------------------------------------
 typedef enum {

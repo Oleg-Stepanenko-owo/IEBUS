@@ -45,11 +45,11 @@ const byte mtSearchHeadSize = sizeof(mtSearchHead) / sizeof(AvcInCmdTable);
 void printAvcAction( AvcActionID id )
 //--------------------------------------------------------------------------------
 {
-  if (!bSDLog.bRedyToLog) return;
+  //if (!bSDLog.bRedyToLog) return;
 
-  char mBuff[20] = { 0 };
-  sprintf( mBuff, "[%u]{%d}", millis(), id );
-  bSDLog.logs( mBuff );
+  // char mBuff[20] = { 0 };
+  // sprintf( mBuff, "[%u]{%d}", millis(), id );
+  // bSDLog.logs( mBuff );
 }
 
 // AVCLan Navi & timer1 init,
@@ -141,13 +141,13 @@ void AVCLanHonda::processAction(AvcActionID ActionID)
       setLockTime( (unsigned long)(millis() + LOCK_TIME) );
       break;
     case ACT_DISP_OFF:
-      if ( !bShowRearCam && isWait() )
+      if ( !bShowRearCam )
       {
         bShowHondaDisp = false;
-        isHondaDisLast = false;
+        isHondaDisLast = false;      
+		printAvcAction(ActionID);
+        setLockTime( (unsigned long)(millis() + LOCK_TIME) );
       }
-      printAvcAction(ActionID);
-      setLockTime( (unsigned long)(millis() + LOCK_TIME) );
       break;
     case ACT_CAM_OFF:
       bShowRearCam = false;
