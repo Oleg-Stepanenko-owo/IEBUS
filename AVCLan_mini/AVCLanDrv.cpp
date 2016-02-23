@@ -530,38 +530,38 @@ bool AVCLanDrv::isAvcBusFree (void)
 void AVCLanDrv::printMessage(bool incoming)
 //--------------------------------------------------------------------------------
 {
-  if (!bSDLog.bRedyToLog) return;
+  /*   if (!bSDLog.bRedyToLog) return;
 
-  char sss[15] = {0};
-  sprintf(sss, "[%u]", millis());
-  bSDLog.print(sss);
+    char sss[15] = {0};
+    sprintf(sss, "[%u]", millis());
+    bSDLog.print(sss);
 
-  if (incoming) {
-    bSDLog.print('<');
-  } else {
-    bSDLog.print('>');
-  }
-  if (broadcast == AVC_MSG_BROADCAST) {
-    bSDLog.print("b ");
-  } else {
-    bSDLog.print("d ");
-  }
+    if (incoming) {
+      bSDLog.print('<');
+    } else {
+      bSDLog.print('>');
+    }
+    if (broadcast == AVC_MSG_BROADCAST) {
+      bSDLog.print("b ");
+    } else {
+      bSDLog.print("d ");
+    }
 
-  bSDLog.printHex4((uint8_t)(masterAddress >> 8));
-  bSDLog.printHex8((uint8_t)(masterAddress));
-  bSDLog.print(' ');
+    bSDLog.printHex4((uint8_t)(masterAddress >> 8));
+    bSDLog.printHex8((uint8_t)(masterAddress));
+    bSDLog.print(' ');
 
-  bSDLog.printHex4(uint8_t(slaveAddress >> 8));
-  bSDLog.printHex8((uint8_t) slaveAddress);
-  bSDLog.print(' ');
+    bSDLog.printHex4(uint8_t(slaveAddress >> 8));
+    bSDLog.printHex8((uint8_t) slaveAddress);
+    bSDLog.print(' ');
 
-  bSDLog.printHex8((uint8_t) dataSize);
-  bSDLog.print(' ');
+    bSDLog.printHex8((uint8_t) dataSize);
+    bSDLog.print(' ');
 
-  for (byte i = 0; i < dataSize; i++) {
-    bSDLog.printHex8((uint8_t)message[i]);
-  }
-  bSDLog.println();
+    for (byte i = 0; i < dataSize; i++) {
+      bSDLog.printHex8((uint8_t)message[i]);
+    }
+    bSDLog.println(); */
   // bSDLog._update();
 }
 
@@ -609,3 +609,5 @@ byte AVCLanDrv::getActionID(const AvcInCmdTable messageTable[], byte mtSize)
 //}
 
 AVCLanDrv avclan;
+
+

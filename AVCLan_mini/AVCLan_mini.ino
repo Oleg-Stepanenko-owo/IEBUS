@@ -24,7 +24,7 @@ void setup()
   sbi(LED_DDR,  COMMUT_OUT);
   cbi(LED_PORT, COMMUT_OUT);
 
-  bSDLog.begin();
+  // bSDLog.begin();
 
   //  Serial.begin(250000);
   //  if (Serial) {
@@ -42,41 +42,52 @@ void setup()
 void loop()
 //--------------------------------------------------------------------------------
 {
-  if ( avclanHonda.isWait() ) {
-    avclanHonda.checkWait();
-    if (avclanHonda.isWait() == false)
-      avclanHonda.tryToShowHondaDisp();
+  if ( avclanHonda.isShowRearCam() ) {
+    HONDA_DIS_ON;
+    return;
   }
 
-  if ( INPUT_IS_SET ) {
-    byte res = avclan.readMessage();
-    if ( !res ) {
-      // //LOG
-      //      avclan.printMessage(true);
-      avclanHonda.getActionID();
-      if ( avclan.actionID != ACT_NONE ) {
-        avclanHonda.processAction( (AvcActionID)avclan.actionID );
+  if ( !avclanHonda.isLockTime() )
+  {
+
+    if ( avclanHonda.isWait() ) {
+      avclanHonda.checkWait();
+      if (avclanHonda.isWait() == false)
+        avclanHonda.tryToShowHondaDisp();
+    }
+
+    if ( INPUT_IS_SET ) {
+      byte res = avclan.readMessage();
+      if ( !res ) {
+        //LOG
+        //      avclan.printMessage(true);
+        avclanHonda.getActionID();
+        if ( avclan.actionID != ACT_NONE ) {
+          avclanHonda.processAction( (AvcActionID)avclan.actionID );
+        }
       }
     }
   }
-
-  //ON a start target
-  if ( 11500 > millis() ) {
-    HONDA_DIS_ON;  // initalize
-    return;
-  } else if ( 18000 > millis() ) {
-    avclanHonda.falseHondaDis();
-    if ( !avclanHonda.isShowRearCam() ) {
-      HONDA_DIS_OFF;
+  else
+  {
+    //ON a start target
+    if ( 11500 > millis() ) {
+      HONDA_DIS_ON;  // initalize
       return;
-    } else {
+    } else if ( 18000 > millis() ) {
+      avclanHonda.falseHondaDis();
+      if ( !avclanHonda.isShowRearCam() ) {
+        HONDA_DIS_OFF;
+        return;
+      } else {
+        HONDA_DIS_ON;
+        return;
+      }
+    } else if ( avclanHonda.getCommute() ) {
       HONDA_DIS_ON;
-      return;
+    } else {
+      HONDA_DIS_OFF;
     }
-  } else if ( avclanHonda.getCommute() ) {
-    HONDA_DIS_ON;
-  } else {
-    HONDA_DIS_OFF;
   }
 }
 
@@ -97,4 +108,6 @@ void EERPOM_read_config()
     avclan.readonly    = EEPROM.read(E_READONLY);
   }
 }
+
+
 

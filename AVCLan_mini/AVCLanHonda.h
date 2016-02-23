@@ -20,7 +20,7 @@
 #define DISABLE_TIMER1_INT (cbi(TIMSK1, TOIE1));
 #endif
 
-// адреса eeprom
+// Р В°Р Т‘РЎР‚Р ВµРЎРѓР В° eeprom
 #define E_MASTER1       0
 #define E_MASTER2       1
 #define E_READONLY      2
@@ -28,7 +28,7 @@
 
 
 #define AVCLANDEVICE_NAME    " Honda Kb1"
-#define AVCLANDEVICE_VERSION "0.0.7"
+#define AVCLANDEVICE_VERSION "0.0.8"
 
 #define BUTT_WAIT 1000
 #define LOCK_TIME 700
@@ -37,7 +37,7 @@
 typedef enum {
   ACT_CAM_ON = 1,
   ACT_CAM_OFF,
-//  ACT_DISP_HULF,
+  //  ACT_DISP_HULF,
   ACT_DISP_OFF,
   ACT_BUTTON_PRESS,
   ACT_B_DISPOFF,
@@ -45,7 +45,7 @@ typedef enum {
   ACT_B_DISPHULF,
   ACT_TEL,
   ACT_TEL_CANCEL
-//  ACT_VOL
+  //  ACT_VOL
 } AvcActionID;
 
 
@@ -68,8 +68,9 @@ class AVCLanHonda
 
     void setLockTime( const unsigned long mTime );
     inline unsigned long getLockTime() const;
+    bool isLockTime();
 
-    void setWait( const bool mWait );
+
     inline bool isWait() const;
 
     inline bool isShowRearCam() const;
@@ -78,7 +79,6 @@ class AVCLanHonda
     void checkWait();
     void checkLock();
     void falseHondaDis();
-    int mVol;
 
 
   private:
@@ -114,3 +114,5 @@ bool AVCLanHonda::isShowHondaDisp() const {
 extern AVCLanHonda avclanHonda;
 
 #endif
+
+

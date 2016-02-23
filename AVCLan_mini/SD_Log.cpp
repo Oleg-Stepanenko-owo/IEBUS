@@ -12,11 +12,11 @@ void SDLog::begin()
 {
   //  canLog = false;
   bRedyToLog = false;
-//  // see if the card is present and can be initialized:
-//  if (SD.begin(chipSelect)) {
-//    bRedyToLog = true;
-//    Serial.println(" READY TO LOG ");
-//  }
+  //  // see if the card is present and can be initialized:
+  //  if (SD.begin(chipSelect)) {
+  //    bRedyToLog = true;
+  //    Serial.println(" READY TO LOG ");
+  //  }
 }
 
 //--------------------------------------------------------------------------------
@@ -170,3 +170,5 @@ void SDLog::println(void)
 //}
 
 SDLog bSDLog;
+
+

@@ -111,32 +111,34 @@ class AVCLanDrv {
     word  headAddress;
     byte  dataSize;
     byte  message[AVC_MAXMSGLEN];
-//    byte  event;
+    //    byte  event;
     byte  actionID;
     bool  readonly;
 
     void  begin ();
     byte  readMessage (void);
-//    byte  sendMessage (void);
-//    byte  sendMessage (const AvcOutMessage*);
+    //    byte  sendMessage (void);
+    //    byte  sendMessage (const AvcOutMessage*);
     void  printMessage (bool incoming);
     bool  isAvcBusFree (void);
     byte  getActionID (const AvcInCmdTable messageTable[], byte mtSize);
     //    byte	getActionID (const AvcInMaskedMessageTable messageTable[], byte mtSize);
-//    void  loadMessage (const AvcOutMessage*);
+    //    void  loadMessage (const AvcOutMessage*);
   private:
     bool  _parityBit;
     word  readBits (byte nbBits);
     byte  _readMessage (void);
-//    byte  _sendMessage (void);
-//    void  sendStartBit (void);
+    //    byte  _sendMessage (void);
+    //    void  sendStartBit (void);
     void  send1BitWord (bool data);
-//    void  send4BitWord (byte data);
-//    void  send8BitWord (byte data);
-//    void  send12BitWord (word data);
-//    bool  readAcknowledge (void);
-//    bool  handleAcknowledge (void);
+    //    void  send4BitWord (byte data);
+    //    void  send8BitWord (byte data);
+    //    void  send12BitWord (word data);
+    //    bool  readAcknowledge (void);
+    //    bool  handleAcknowledge (void);
 };
 
 extern AVCLanDrv avclan;
 #endif
+
+

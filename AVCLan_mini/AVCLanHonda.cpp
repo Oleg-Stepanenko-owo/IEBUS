@@ -24,8 +24,9 @@
 //  // 10 680231020200 05 13000000001D0000DE - vol = 1
 //};
 
+// { action_name,  packed_size, end_off_packege_word(check_sum)  }
 const AvcInCmdTable  mtSearchHead[] PROGMEM = {
-  { ACT_BUTTON_PRESS,   0x08,   0xBE},         // Button press
+  { ACT_BUTTON_PRESS,   0x08,   0xBE},     // Button press
   { ACT_B_DISPOFF,      0x08,   0x2F},
   { ACT_B_DISPFULL,     0x08,   0xBD},
   { ACT_B_DISPHULF,     0x08,   0xCF},
@@ -33,8 +34,8 @@ const AvcInCmdTable  mtSearchHead[] PROGMEM = {
   { ACT_CAM_OFF,        0x09,   0x30},    // Cam OFF
   //        { ACT_DISP_HULF,      0x09,     0x30},    // display hulf color ???
   { ACT_DISP_OFF,       0x09,   0x2E},    // display off
-  { ACT_TEL,            0x0A,   0xE3},
-  { ACT_TEL_CANCEL,     0x0A,   0xDC}
+  { ACT_TEL,            0x0A,   0xE3},	  // start Tel Action
+  { ACT_TEL_CANCEL,     0x0A,   0xDC}	  // Cancel or End Call_ACTION
   //        { ACT_VOL,            0x0A,    0x06, {0x68, 0x02, 0x31, 0x02, 0x02, 0x00}, 0x00, {0x00}}  //0x05 = 1
 };
 
@@ -52,19 +53,16 @@ void printAvcAction( AvcActionID id )
   // bSDLog.logs( mBuff );
 }
 
-// AVCLan Navi & timer1 init,
 //--------------------------------------------------------------------------------
 void AVCLanHonda::begin()
 //--------------------------------------------------------------------------------
 {
-  mVol = 0;
   avclan.deviceAddress = 0x0131;
 
   bShowHondaDisp = false;
   isHondaDisLast = false;
   bShowRearCam =  false;
 
-  setWait( false );
   setWaitTime( 0L );
   setLockTime( 0L );
 
@@ -82,9 +80,9 @@ void AVCLanHonda::setWaitTime( const unsigned long mTime )
 {
   waitTime = mTime;
   if ( mTime > 0L ) {
-    setWait(true);
+    bWait = true;
   } else {
-    setWait(false);
+    bWait = false;
   }
 }
 
@@ -93,13 +91,8 @@ void AVCLanHonda::setLockTime( const unsigned long mTime )
 //--------------------------------------------------------------------------------
 {
   lockTime = mTime;
-}
-
-//--------------------------------------------------------------------------------
-void AVCLanHonda::setWait( const bool mWait )
-//--------------------------------------------------------------------------------
-{
-  bWait = mWait;
+  bLock = true;
+  setWaitTime(0L);
 }
 
 // Use the last received message to determine the corresponding action ID, store it in avclan object
@@ -127,7 +120,7 @@ void AVCLanHonda::processAction(AvcActionID ActionID)
     case ACT_BUTTON_PRESS:
       {
         printAvcAction(ActionID);
-        if ( !bShowRearCam || !isWait() || ( getLockTime() < millis()) )
+        if ( !bShowRearCam || !isWait() || !isLockTime() )
         {
           setWaitTime( (unsigned long)((millis() + BUTT_WAIT)) );
         }
@@ -144,8 +137,8 @@ void AVCLanHonda::processAction(AvcActionID ActionID)
       if ( !bShowRearCam )
       {
         bShowHondaDisp = false;
-        isHondaDisLast = false;      
-		printAvcAction(ActionID);
+        isHondaDisLast = false;
+        printAvcAction(ActionID);
         setLockTime( (unsigned long)(millis() + LOCK_TIME) );
       }
       break;
@@ -179,7 +172,7 @@ void AVCLanHonda::tryToShowHondaDisp()
 //--------------------------------------------------------------------------------
 {
   bWait = false;
-  if ( getLockTime() > millis() ) return;
+  if ( isLockTime() ) return;
   bShowHondaDisp = true;
 }
 
@@ -191,4 +184,16 @@ void AVCLanHonda::falseHondaDis()
   isHondaDisLast = false;
 }
 
+//--------------------------------------------------------------------------------
+bool AVCLanHonda::isLockTime()
+//--------------------------------------------------------------------------------
+{
+  if ( bLock ) {
+    bLock = ( getLockTime() > millis() );
+  }
+  return bLock;
+}
+
 AVCLanHonda avclanHonda;
+
+
