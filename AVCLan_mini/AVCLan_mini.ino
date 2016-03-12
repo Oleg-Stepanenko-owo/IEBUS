@@ -42,53 +42,82 @@ void setup()
 void loop()
 //--------------------------------------------------------------------------------
 {
-  if ( avclanHonda.isShowRearCam() ) {
-    HONDA_DIS_ON;
+
+  if ( avclanHonda.bFirstStart_20 && (11500 > millis()) ) {
+    HONDA_DIS_ON;  // initalize
     return;
   }
 
-  if ( !avclanHonda.isLockTime() )
-  {
-
-    if ( avclanHonda.isWait() ) {
-      avclanHonda.checkWait();
-      if (avclanHonda.isWait() == false)
-        avclanHonda.tryToShowHondaDisp();
-    }
-
-    if ( INPUT_IS_SET ) {
-      byte res = avclan.readMessage();
-      if ( !res ) {
-        //LOG
-        //      avclan.printMessage(true);
-        avclanHonda.getActionID();
-        if ( avclan.actionID != ACT_NONE ) {
-          avclanHonda.processAction( (AvcActionID)avclan.actionID );
-        }
+  if ( INPUT_IS_SET ) {
+    byte res = avclan.readMessage();
+    if ( !res ) {
+      avclanHonda.getActionID();
+      if ( avclan.actionID != ACT_NONE ) {
+        avclanHonda.processAction( (AvcActionID)avclan.actionID );
       }
     }
   }
-  else
-  {
-    //ON a start target
-    if ( 11500 > millis() ) {
-      HONDA_DIS_ON;  // initalize
-      return;
-    } else if ( 18000 > millis() ) {
-      avclanHonda.falseHondaDis();
-      if ( !avclanHonda.isShowRearCam() ) {
-        HONDA_DIS_OFF;
-        return;
-      } else {
-        HONDA_DIS_ON;
-        return;
-      }
-    } else if ( avclanHonda.getCommute() ) {
+
+
+  if ( avclanHonda.isWait() ) {
+    avclanHonda.checkWait();
+    if ( !avclanHonda.isWait() ) avclanHonda.tryToShowHondaDisp();
+  } else {
+    if ( avclanHonda.getCommute() ) {
       HONDA_DIS_ON;
     } else {
       HONDA_DIS_OFF;
     }
   }
+
+
+  //-------------------------------
+
+  /*
+
+    if ( !avclanHonda.isLockTime() )
+    {
+      if ( avclanHonda.isWait() ) {
+        avclanHonda.checkWait();
+        if (avclanHonda.isWait() == false)
+          avclanHonda.tryToShowHondaDisp();
+      }
+
+      if ( INPUT_IS_SET ) {
+        byte res = avclan.readMessage();
+        if ( !res ) {
+          //LOG
+          //      avclan.printMessage(true);
+          avclanHonda.getActionID();
+          if ( avclan.actionID != ACT_NONE ) {
+            avclanHonda.processAction( (AvcActionID)avclan.actionID );
+          }
+        }
+      }
+    }
+    else
+    {
+      //ON a start target
+      if ( 11500 > millis() ) {
+        HONDA_DIS_ON;  // initalize
+        return;
+      } else if ( 18000 > millis() ) {
+        avclanHonda.falseHondaDis();
+        if ( !avclanHonda.isShowRearCam() ) {
+          HONDA_DIS_OFF;
+          return;
+        } else {
+          HONDA_DIS_ON;
+          return;
+        }
+      } else if ( avclanHonda.getCommute() ) {
+        HONDA_DIS_ON;
+      } else {
+        HONDA_DIS_OFF;
+      }
+    }
+
+  */
 }
 
 //--------------------------------------------------------------------------------

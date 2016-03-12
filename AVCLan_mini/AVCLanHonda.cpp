@@ -1,4 +1,5 @@
 //--------------------------------------------------------------------------------
+#include "limits.h"
 #include <EEPROM.h>
 #include "AVCLanDrv.h"
 #include "AVCLanHonda.h"
@@ -62,9 +63,9 @@ void AVCLanHonda::begin()
   bShowHondaDisp = false;
   isHondaDisLast = false;
   bShowRearCam =  false;
+  bFirstStart_20 = true;
 
   setWaitTime( 0L );
-  setLockTime( 0L );
 
   // timer1 setup, prescaler factor - 1024
   TCCR1A = 0;       // normal mode
@@ -86,14 +87,14 @@ void AVCLanHonda::setWaitTime( const unsigned long mTime )
   }
 }
 
-//--------------------------------------------------------------------------------
-void AVCLanHonda::setLockTime( const unsigned long mTime )
-//--------------------------------------------------------------------------------
-{
-  lockTime = mTime;
-  bLock = true;
-  setWaitTime(0L);
-}
+////--------------------------------------------------------------------------------
+//void AVCLanHonda::setLockTime( const unsigned long mTime )
+////--------------------------------------------------------------------------------
+//{
+//  lockTime = mTime;
+//  bLock = true;
+//  setWaitTime(0L);
+//}
 
 // Use the last received message to determine the corresponding action ID, store it in avclan object
 //--------------------------------------------------------------------------------
@@ -105,24 +106,26 @@ void AVCLanHonda::getActionID()
 
 // process action
 //--------------------------------------------------------------------------------
-void AVCLanHonda::processAction(AvcActionID ActionID)
+void AVCLanHonda::processAction( AvcActionID ActionID )
 //--------------------------------------------------------------------------------
 {
-  if ( (20000 > millis()) && (ACT_CAM_ON == ActionID) ) {
+  if ( bFirstStart_20 && (20000 > millis()) && (ACT_CAM_ON == ActionID) ) {
     bShowRearCam = true;
     isHondaDisLast = false;
     bShowHondaDisp = true;
-    printAvcAction(ActionID);
     return;
   }
+
+  if ( bFirstStart_20 && (20000 < millis()) ) bFirstStart_20 = false;
 
   switch ( ActionID ) {
     case ACT_BUTTON_PRESS:
       {
-        printAvcAction(ActionID);
-        if ( !bShowRearCam || !isWait() || !isLockTime() )
+        if ( !bShowRearCam || !isWait() )
         {
-          setWaitTime( (unsigned long)((millis() + BUTT_WAIT)) );
+          if ( ULONG_MAX > (millis() + BUTT_WAIT) )
+            setWaitTime( (unsigned long)((millis() + BUTT_WAIT)) );
+          else setWaitTime( BUTT_WAIT );
         }
       }
       break;
@@ -130,23 +133,25 @@ void AVCLanHonda::processAction(AvcActionID ActionID)
       bShowRearCam = true;
       isHondaDisLast = isShowHondaDisp();
       bShowHondaDisp = true;
-      printAvcAction(ActionID);
-      setLockTime( (unsigned long)(millis() + LOCK_TIME) );
+      setWaitTime(0L);
+      //      setLockTime( (unsigned long)(millis() + LOCK_TIME) );
       break;
     case ACT_DISP_OFF:
       if ( !bShowRearCam )
       {
         bShowHondaDisp = false;
         isHondaDisLast = false;
-        printAvcAction(ActionID);
-        setLockTime( (unsigned long)(millis() + LOCK_TIME) );
+        setWaitTime(0L);
+        //        printAvcAction(ActionID);
+        //        setLockTime( (unsigned long)(millis() + LOCK_TIME) );
       }
       break;
     case ACT_CAM_OFF:
       bShowRearCam = false;
       bShowHondaDisp = isHondaDisLast;
-      printAvcAction(ActionID);
-      setLockTime( (unsigned long)(millis() + LOCK_TIME) );
+      setWaitTime(0L);
+      //      printAvcAction(ActionID);
+      //      setLockTime( (unsigned long)(millis() + LOCK_TIME) );
       break;
   }
 };
@@ -171,8 +176,7 @@ bool AVCLanHonda::getCommute()
 void AVCLanHonda::tryToShowHondaDisp()
 //--------------------------------------------------------------------------------
 {
-  bWait = false;
-  if ( isLockTime() ) return;
+  //  if ( isLockTime() ) return;
   bShowHondaDisp = true;
 }
 
@@ -184,15 +188,15 @@ void AVCLanHonda::falseHondaDis()
   isHondaDisLast = false;
 }
 
-//--------------------------------------------------------------------------------
-bool AVCLanHonda::isLockTime()
-//--------------------------------------------------------------------------------
-{
-  if ( bLock ) {
-    bLock = ( getLockTime() > millis() );
-  }
-  return bLock;
-}
+////--------------------------------------------------------------------------------
+//bool AVCLanHonda::isLockTime()
+////--------------------------------------------------------------------------------
+//{
+//  if ( bLock ) {
+//    bLock = ( getLockTime() > millis() );
+//  }
+//  return bLock;
+//}
 
 AVCLanHonda avclanHonda;
 

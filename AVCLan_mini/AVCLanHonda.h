@@ -20,7 +20,7 @@
 #define DISABLE_TIMER1_INT (cbi(TIMSK1, TOIE1));
 #endif
 
-// Р В°Р Т‘РЎР‚Р ВµРЎРѓР В° eeprom
+// Р В Р’В°Р В РўвЂ�Р РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В° eeprom
 #define E_MASTER1       0
 #define E_MASTER2       1
 #define E_READONLY      2
@@ -66,9 +66,9 @@ class AVCLanHonda
     void setWaitTime( const unsigned long mTime );
     inline unsigned long getWaitTime() const;
 
-    void setLockTime( const unsigned long mTime );
-    inline unsigned long getLockTime() const;
-    bool isLockTime();
+    //    void setLockTime( const unsigned long mTime );
+    //    inline unsigned long getLockTime() const;
+    //    bool isLockTime();
 
 
     inline bool isWait() const;
@@ -80,10 +80,11 @@ class AVCLanHonda
     void checkLock();
     void falseHondaDis();
 
+    bool bFirstStart_20;
 
   private:
     unsigned long waitTime;
-    unsigned long lockTime;
+    //    unsigned long lockTime;
 
     bool bWait;
     bool bLock;
@@ -94,9 +95,9 @@ class AVCLanHonda
     bool isHondaDisLast;
 };
 
-unsigned long AVCLanHonda::getLockTime() const {
-  return lockTime;
-}
+//unsigned long AVCLanHonda::getLockTime() const {
+//  return lockTime;
+//}
 
 unsigned long AVCLanHonda::getWaitTime() const {
   return waitTime;

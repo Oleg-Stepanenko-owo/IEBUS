@@ -1,7 +1,5 @@
 #include "AVCLanDrv.h"
-#include "AVCLanHonda.h"
-//#include "BuffSerial.h"
-#include "SD_Log.h"
+#include "BuffSerial.h"
 
 // AVCLan driver & timer2 init,
 // char buff[80] = {0};
@@ -225,7 +223,6 @@ byte AVCLanDrv::readMessage ()
   {
     while (!avclan.isAvcBusFree());
   }
-  // else avclan.printMessage(true);
   return res;
 }
 
@@ -530,61 +527,31 @@ bool AVCLanDrv::isAvcBusFree (void)
 void AVCLanDrv::printMessage(bool incoming)
 //--------------------------------------------------------------------------------
 {
-  /*   if (!bSDLog.bRedyToLog) return;
+  if (incoming) {
+    bSerial.print("< ");
+  } else {
+    bSerial.print("> ");
+  }
+  if (broadcast == AVC_MSG_BROADCAST) {
+    bSerial.print("b ");
+  } else {
+    bSerial.print("d ");
+  }
+  bSerial.printHex4(masterAddress >> 8);
+  bSerial.printHex8(masterAddress);
+  bSerial.print(" ");
 
-    char sss[15] = {0};
-    sprintf(sss, "[%u]", millis());
-    bSDLog.print(sss);
+  bSerial.printHex4(slaveAddress >> 8);
+  bSerial.printHex8(slaveAddress);
+  bSerial.print(" ");
+  bSerial.printHex8(dataSize);
 
-    if (incoming) {
-      bSDLog.print('<');
-    } else {
-      bSDLog.print('>');
-    }
-    if (broadcast == AVC_MSG_BROADCAST) {
-      bSDLog.print("b ");
-    } else {
-      bSDLog.print("d ");
-    }
-
-    bSDLog.printHex4((uint8_t)(masterAddress >> 8));
-    bSDLog.printHex8((uint8_t)(masterAddress));
-    bSDLog.print(' ');
-
-    bSDLog.printHex4(uint8_t(slaveAddress >> 8));
-    bSDLog.printHex8((uint8_t) slaveAddress);
-    bSDLog.print(' ');
-
-    bSDLog.printHex8((uint8_t) dataSize);
-    bSDLog.print(' ');
-
-    for (byte i = 0; i < dataSize; i++) {
-      bSDLog.printHex8((uint8_t)message[i]);
-    }
-    bSDLog.println(); */
-  // bSDLog._update();
+  for (byte i = 0; i < dataSize; i++) {
+    bSerial.printHex8(message[i]);
+  }
+  bSerial.println();
 }
 
-// Use the last received message to determine the corresponding action ID
-//--------------------------------------------------------------------------------
-byte AVCLanDrv::getActionID(const AvcInCmdTable messageTable[], byte mtSize)
-//--------------------------------------------------------------------------------
-{
-  if ( ((slaveAddress != deviceAddress) && (slaveAddress != 0x0FFF))
-       || (( dataSize < 8) || (dataSize > 10 )) ) {
-    return ACT_NONE;
-  }
-
-  byte idx = ((dataSize == 8) ? 0 : (dataSize == 9 ? 4 : 7)); // position in AvcInMessageTable
-
-  for (; idx < mtSize; ++idx) {
-    if (dataSize != pgm_read_byte_near(&messageTable[idx].dataSize)) return ACT_NONE; // Because first unsized value from other range
-
-    if ( message[dataSize - 1] == pgm_read_byte_near(&messageTable[idx].command) )
-      return pgm_read_byte_near( &messageTable[idx].actionID );
-  }
-  return ACT_NONE;
-}
 
 // Loads message data for given mesage ID.
 ////--------------------------------------------------------------------------------
