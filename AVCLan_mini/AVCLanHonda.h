@@ -20,7 +20,6 @@
 #define DISABLE_TIMER1_INT (cbi(TIMSK1, TOIE1));
 #endif
 
-// Р В Р’В°Р В РўвЂ�Р РЋР вЂљР В Р’ВµР РЋР С“Р В Р’В° eeprom
 #define E_MASTER1       0
 #define E_MASTER2       1
 #define E_READONLY      2
@@ -28,7 +27,7 @@
 
 
 #define AVCLANDEVICE_NAME    " Honda Kb1"
-#define AVCLANDEVICE_VERSION "0.0.8"
+#define AVCLANDEVICE_VERSION "0.1.0"
 
 #define BUTT_WAIT 1000
 #define LOCK_TIME 700
@@ -66,11 +65,6 @@ class AVCLanHonda
     void setWaitTime( const unsigned long mTime );
     inline unsigned long getWaitTime() const;
 
-    //    void setLockTime( const unsigned long mTime );
-    //    inline unsigned long getLockTime() const;
-    //    bool isLockTime();
-
-
     inline bool isWait() const;
 
     inline bool isShowRearCam() const;
@@ -78,7 +72,7 @@ class AVCLanHonda
 
     void checkWait();
     void checkLock();
-    void falseHondaDis();
+    void setHondaDis( bool val );
 
     bool bFirstStart_20;
 
@@ -92,12 +86,8 @@ class AVCLanHonda
     bool bShowRearCam;
     bool bShowHondaDisp;
     bool bTimeSwitch;
-    bool isHondaDisLast;
+    bool bHondaDisLast;
 };
-
-//unsigned long AVCLanHonda::getLockTime() const {
-//  return lockTime;
-//}
 
 unsigned long AVCLanHonda::getWaitTime() const {
   return waitTime;

@@ -1,10 +1,6 @@
 #include "AVCLanDrv.h"
 #include "AVCLanHonda.h"
-//#include "BuffSerial.h"
-#include "SD_Log.h"
 
-// AVCLan driver & timer2 init,
-// char buff[80] = {0};
 //--------------------------------------------------------------------------------
 void AVCLanDrv::begin ()
 //--------------------------------------------------------------------------------
