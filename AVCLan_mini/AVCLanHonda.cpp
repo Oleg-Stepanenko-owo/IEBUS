@@ -50,8 +50,10 @@ void AVCLanHonda::begin()
   bHondaDisLast = false;
   bShowRearCam =  false;
   bFirstStart_20 = true;
+  bFreeze = false;
 
   setWaitTime( 0L );
+  freezeTime = 0L;
 
   // timer1 setup, prescaler factor - 1024
   TCCR1A = 0;       // normal mode
@@ -112,9 +114,12 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
     case ACT_DISP_OFF:
       if ( !bShowRearCam )
       {
+        // need freeze on 2000 sec after code receiving.
         bShowHondaDisp = false;
         bHondaDisLast = false;
         setWaitTime(0L);
+        bFreeze = true;
+        freezeTime = (millis() + FREEZE_TIME);
       }
       break;
     case ACT_CAM_OFF:

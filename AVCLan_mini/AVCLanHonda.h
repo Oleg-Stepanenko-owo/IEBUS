@@ -30,7 +30,7 @@
 #define AVCLANDEVICE_VERSION "0.1.0"
 
 #define BUTT_WAIT 1000
-#define LOCK_TIME 700
+#define FREEZE_TIME 1500
 
 //--------------------------------------------------------------------------------
 typedef enum {
@@ -74,14 +74,17 @@ class AVCLanHonda
     void checkLock();
     void setHondaDis( bool val );
 
+    bool bFreeze;
     bool bFirstStart_20;
+
+    unsigned long freezeTime;
 
   private:
     unsigned long waitTime;
-    //    unsigned long lockTime;
+
 
     bool bWait;
-    bool bLock;
+
 
     bool bShowRearCam;
     bool bShowHondaDisp;

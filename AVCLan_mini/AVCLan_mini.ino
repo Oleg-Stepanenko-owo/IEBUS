@@ -33,6 +33,13 @@ void loop()
     avclanHonda.setHondaDis( false ); //Show GVN screen
   }
 
+  if ( avclanHonda.bFreeze ) {
+    if ( avclanHonda.freezeTime < millis() )  {
+      avclanHonda.bFreeze = false;
+      avclanHonda.freezeTime = 0L;
+    } else return;
+  }
+
   if ( INPUT_IS_SET ) {
     byte res = avclan.readMessage();
     if ( !res ) {
