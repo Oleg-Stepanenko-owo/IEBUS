@@ -2,12 +2,16 @@
   BuffSerial.cpp v.01 - serial with transmit buffer library for Wiring
   Created by Kochetkov Aleksey, 03.07.2009
 */
+//--------------------------------------------------------------------------------
 #include <stdio.h>
-
 #include "BuffSerial.h"
+//--------------------------------------------------------------------------------
 
 // serial init
-void BuffSerial::begin(long speed) {
+//--------------------------------------------------------------------------------
+void BuffSerial::begin(long speed)
+{
+  //--------------------------------------------------------------------------------
 #if defined(__AVR_ATmega8__)
   UCSRB = _BV(RXCIE) | _BV(RXEN) | _BV(TXCIE) | _BV(TXEN);   // enable rx, tx inerrputs
   UBRRH = ((F_CPU / 16 + speed / 2) / speed - 1) >> 8;       // usart speed
@@ -22,6 +26,7 @@ void BuffSerial::begin(long speed) {
   txFull  = 0;
 }
 
+//--------------------------------------------------------------------------------
 //USART Rx Complete
 #if defined(__AVR_ATmega8__)
 SIGNAL(SIG_UART_RECV)
@@ -36,7 +41,9 @@ SIGNAL(USART_RX_vect)
 #endif
   if (bSerial.rxEnd < RX_BUFF_SIZE) bSerial.rxEnd++;
 }
+//--------------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------------
 //USART Tx Complete
 #if defined(__AVR_ATmega8__)
 SIGNAL(SIG_UART_TRANS)
@@ -56,9 +63,13 @@ SIGNAL(USART_TX_vect)
   }
 
 }
+//--------------------------------------------------------------------------------
 
 // send byte to serial or buffer if bisy
-void BuffSerial::sendByte(uint8_t data) {
+//--------------------------------------------------------------------------------
+void BuffSerial::sendByte(uint8_t data)
+//--------------------------------------------------------------------------------
+{
   if (txFull) {
     txOverflow++;
   } else {
@@ -85,43 +96,66 @@ void BuffSerial::sendByte(uint8_t data) {
 }
 
 // print string
-void BuffSerial::print(const char *pBuf) {
+//--------------------------------------------------------------------------------
+void BuffSerial::print(const char *pBuf)
+//--------------------------------------------------------------------------------
+{
   while (*pBuf)	{
     sendByte(*pBuf++);
   }
 }
 
-void BuffSerial::print(const char pBuf) {
+//--------------------------------------------------------------------------------
+void BuffSerial::print(const char pBuf)
+//--------------------------------------------------------------------------------
+{
   sendByte(pBuf);
 }
 
-
-void BuffSerial::println(const char *pBuf) {
+//--------------------------------------------------------------------------------
+void BuffSerial::println(const char *pBuf)
+//--------------------------------------------------------------------------------
+{
   print(pBuf);
   println();
 }
 
-void BuffSerial::println(const char pBuf) {
+//--------------------------------------------------------------------------------
+void BuffSerial::println(const char pBuf)
+//--------------------------------------------------------------------------------
+{
   print(pBuf);
   println();
 }
 
-void BuffSerial::println(void) {
+//--------------------------------------------------------------------------------
+void BuffSerial::println(void)
+//--------------------------------------------------------------------------------
+{
   print("\r\n");
 }
 
-void BuffSerial::printHex4(uint8_t data) {
+//--------------------------------------------------------------------------------
+void BuffSerial::printHex4(uint8_t data)
+//--------------------------------------------------------------------------------
+{
   uint8_t c = data & 0x0f;
   c += c < 10 ? '0' : 'A' - 10 ;
   sendByte(c);
 }
 
-void BuffSerial::printHex8(uint8_t data) {
+//--------------------------------------------------------------------------------
+void BuffSerial::printHex8(uint8_t data)
+//--------------------------------------------------------------------------------
+{
   printHex4(data >> 4);
   printHex4(data);
 }
 
-void BuffSerial::printDec(uint8_t data) {
+//--------------------------------------------------------------------------------
+void BuffSerial::printDec(uint8_t data)
+//--------------------------------------------------------------------------------
+{
   uint8_t buf[3];
   uint8_t i = 0;
   if (data == 0) {
@@ -138,11 +172,17 @@ void BuffSerial::printDec(uint8_t data) {
 }
 
 // check rx buffer not empty
-bool BuffSerial::rxEnabled(void) {
+//--------------------------------------------------------------------------------
+bool BuffSerial::rxEnabled(void)
+//--------------------------------------------------------------------------------
+{
   return rxEnd;
 }
 
-uint8_t BuffSerial::rxRead(void) {
+//--------------------------------------------------------------------------------
+uint8_t BuffSerial::rxRead(void)
+//--------------------------------------------------------------------------------
+{
 #if defined(__AVR_ATmega8__)
   cbi(UCSRB, RXCIE);                           // disable RX complete interrupt
 #else
