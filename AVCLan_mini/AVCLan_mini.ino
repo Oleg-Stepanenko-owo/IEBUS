@@ -1,6 +1,7 @@
 
 #include "AVCLanDrv.h"
 #include "AVCLanHonda.h"
+#include "AVCLan_BT.h"
 #include "config.h"
 //--------------------------------------------------------------------------------
 
@@ -11,6 +12,9 @@
 #define HONDA_DIS_ON   sbi(LED_PORT, COMMUT_OUT);
 #define HONDA_DIS_OFF  cbi(LED_PORT, COMMUT_OUT);
 
+static int MAX_ERROR_COUNT = 30;
+byte errorID;
+int  error_count;
 //--------------------------------------------------------------------------------
 void setup()
 //--------------------------------------------------------------------------------
@@ -20,6 +24,11 @@ void setup()
 
   avclan.begin();
   avclanHonda.begin();
+  errorID = 0;
+  error_count = 0;
+
+  avclanBT.begin();
+  avclanBT.println("Start HONDA avclan.");
 }
 
 //--------------------------------------------------------------------------------
@@ -43,9 +52,21 @@ void loop()
   if ( INPUT_IS_SET ) {
     byte res = avclan.readMessage();
     if ( !res ) {
+      error_count = 0;
+
       avclanHonda.getActionID();
       if ( avclan.actionID != ACT_NONE ) {
         avclanHonda.processAction( (AvcActionID)avclan.actionID );
+      }
+    } else {
+      if ( errorID == res ) error_count++;
+      else error_count = 1;
+
+      errorID = res;
+
+      if ( error_count > MAX_ERROR_COUNT ) {
+        error_count = 0;
+        avclanHonda.setHondaDis(true);
       }
     }
   }
@@ -59,6 +80,13 @@ void loop()
     } else {
       HONDA_DIS_OFF;
     }
+  }
+
+  if ( !error_count &&  errorID ) {
+    char BUFFF[15];
+    sprintf(BUFFF, "Error: %d", errorID);
+    avclanBT.println( BUFFF );
+    delay(2000);
   }
 }
 

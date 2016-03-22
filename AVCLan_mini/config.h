@@ -29,10 +29,7 @@
 #define  LED_DDR     DDRC
 #define  LED_PORT    PORTC
 #define  LED_PIN     PINC
-//#define  LED_OUT     5
-
-// Commutate pin 11
-#define COMMUT_OUT   1
+#define COMMUT_OUT   0
 
 
 // AZFM board activate
