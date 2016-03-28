@@ -39,13 +39,13 @@ void AVCLanDrv::begin ()
 #if defined(__AVR_ATmega8__)
   //  ASSR=0x00;
   TCCR2 = 0x02;
-  //  TCNT2=0x00;
+  //  TCNT0=0x00;
   //  OCR2=0x00;
 #else   // ATMega168
   //  ASSR=0x00;
   //  TCCR2A=0x00;
-  TCCR2B = 0x02;
-  //  TCNT2=0x00;
+  TCCR0B = 0x02;
+  //  TCNT0=0x00;
   //  OCR2A=0x00;
   //  OCR2B=0x00;
 #endif
@@ -75,18 +75,18 @@ word AVCLanDrv::readBits (byte nbBits)
     }
 
     // Reset timer to measure bit length.
-    TCNT2 = 0;
+    TCNT0 = 0;
     // Wait until falling edge.
     while (INPUT_IS_SET);
     // Compare half way between a '1' (20 us) and a '0' (32 us ): 32 - (32 - 20) /2 = 26 us
-    if (TCNT2 < AVC_BIT_0_HOLD_ON_MIN_LENGTH) {
+    if (TCNT0 < AVC_BIT_0_HOLD_ON_MIN_LENGTH) {
       // Set new bit.
       data |= 0x0001;
       // Adjust parity.
       _parityBit = !_parityBit;
     }
   }
-  while (INPUT_IS_CLEAR && TCNT2 < AVC_NORMAL_BIT_LENGTH);
+  while (INPUT_IS_CLEAR && TCNT0 < AVC_NORMAL_BIT_LENGTH);
 
   //  char buff[10] = {0};
   //  sprintf(buff, "%x", data );
@@ -106,18 +106,18 @@ byte AVCLanDrv::_readMessage ()
 
   // Start bit.
   while (INPUT_IS_CLEAR);
-  TCCR2B = 0x03;    // prescaler 32
-  TCNT2 = 0;
+  TCCR0B = 0x03;    // prescaler 32
+  TCNT0 = 0;
   // Wait until falling edge.
   while (INPUT_IS_SET) {
-    t = TCNT2;
+    t = TCNT0;
     if (t > 0xFF) {
-      TCCR2B = 0x02;    // prescaler 8
+      TCCR0B = 0x02;    // prescaler 8
       SREG = oldSREG;
       return 1;
     }
   }
-  TCCR2B = 0x02;    // prescaler 8
+  TCCR0B = 0x02;    // prescaler 8
 
   if (t < AVC_START_BIT_HOLD_ON_MIN_LENGTH) {
     //if (t < 0x16){
@@ -231,17 +231,17 @@ byte AVCLanDrv::readMessage ()
 ////--------------------------------------------------------------------------------
 //{
 //  // Reset timer to measure bit length.
-//  TCCR2B = 0x03;    // prescaler 32
-//  TCNT2 = 0;
+//  TCCR0B = 0x03;    // prescaler 32
+//  TCNT0 = 0;
 //  OUTPUT_SET_1;
 //
 //  // Pulse level high duration.
-//  while ( TCNT2 < AVC_START_BIT_HOLD_ON_LENGTH );
+//  while ( TCNT0 < AVC_START_BIT_HOLD_ON_LENGTH );
 //  OUTPUT_SET_0;
 //
 //  // Pulse level low duration until ~185 us.
-//  while ( TCNT2 < AVC_START_BIT_LENGTH );
-//  TCCR2B = 0x02;    // prescaler 8
+//  while ( TCNT0 < AVC_START_BIT_LENGTH );
+//  TCCR0B = 0x02;    // prescaler 8
 //
 //}
 
@@ -251,17 +251,17 @@ void AVCLanDrv::send1BitWord (bool data)
 //--------------------------------------------------------------------------------
 {
   // Reset timer to measure bit length.
-  TCNT2 = 0;
+  TCNT0 = 0;
   OUTPUT_SET_1;
 
   if (data) {
-    while (TCNT2 < AVC_BIT_1_HOLD_ON_LENGTH);
+    while (TCNT0 < AVC_BIT_1_HOLD_ON_LENGTH);
   } else {
-    while (TCNT2 < AVC_BIT_0_HOLD_ON_LENGTH);
+    while (TCNT0 < AVC_BIT_0_HOLD_ON_LENGTH);
   }
 
   OUTPUT_SET_0;
-  while (TCNT2 <  AVC_NORMAL_BIT_LENGTH);
+  while (TCNT0 <  AVC_NORMAL_BIT_LENGTH);
 }
 
 //// Send a 4 bit word to the AVCLan
@@ -274,20 +274,20 @@ void AVCLanDrv::send1BitWord (bool data)
 //  // Most significant bit out first.
 //  for ( char nbBits = 0; nbBits < 4; nbBits++ ) {
 //    // Reset timer to measure bit length.
-//    TCNT2 = 2;
+//    TCNT0 = 2;
 //    OUTPUT_SET_1;
 //
 //    if (data & 0x8) {
 //      // Adjust parity.
 //      _parityBit = ! _parityBit;
-//      while ( TCNT2 < AVC_BIT_1_HOLD_ON_LENGTH );
+//      while ( TCNT0 < AVC_BIT_1_HOLD_ON_LENGTH );
 //    } else {
-//      while ( TCNT2 < AVC_BIT_0_HOLD_ON_LENGTH );
+//      while ( TCNT0 < AVC_BIT_0_HOLD_ON_LENGTH );
 //    }
 //
 //    OUTPUT_SET_0;
 //    // Hold output low until end of bit.
-//    while ( TCNT2 < AVC_NORMAL_BIT_LENGTH );
+//    while ( TCNT0 < AVC_NORMAL_BIT_LENGTH );
 //
 //    // Fetch next bit.
 //    data <<= 1;
@@ -304,20 +304,20 @@ void AVCLanDrv::send1BitWord (bool data)
 //  // Most significant bit out first.
 //  for ( char nbBits = 0; nbBits < 8; nbBits++ ) {
 //    // Reset timer to measure bit length.
-//    TCNT2 = 2;
+//    TCNT0 = 2;
 //    OUTPUT_SET_1;
 //
 //    if (data & 0x80) {
 //      // Adjust parity.
 //      _parityBit = ! _parityBit;
-//      while ( TCNT2 < AVC_BIT_1_HOLD_ON_LENGTH );
+//      while ( TCNT0 < AVC_BIT_1_HOLD_ON_LENGTH );
 //    } else {
-//      while ( TCNT2 < AVC_BIT_0_HOLD_ON_LENGTH );
+//      while ( TCNT0 < AVC_BIT_0_HOLD_ON_LENGTH );
 //    }
 //
 //    OUTPUT_SET_0;
 //    // Hold output low until end of bit.
-//    while ( TCNT2 < AVC_NORMAL_BIT_LENGTH );
+//    while ( TCNT0 < AVC_NORMAL_BIT_LENGTH );
 //
 //    // Fetch next bit.
 //    data <<= 1;
@@ -334,20 +334,20 @@ void AVCLanDrv::send1BitWord (bool data)
 //  // Most significant bit out first.
 //  for ( char nbBits = 0; nbBits < 12; nbBits++ ) {
 //    // Reset timer to measure bit length.
-//    TCNT2 = 2;
+//    TCNT0 = 2;
 //    OUTPUT_SET_1;
 //
 //    if (data & 0x0800) {
 //      // Adjust parity.
 //      _parityBit = ! _parityBit;
-//      while ( TCNT2 < AVC_BIT_1_HOLD_ON_LENGTH );
+//      while ( TCNT0 < AVC_BIT_1_HOLD_ON_LENGTH );
 //    } else {
-//      while ( TCNT2 < AVC_BIT_0_HOLD_ON_LENGTH );
+//      while ( TCNT0 < AVC_BIT_0_HOLD_ON_LENGTH );
 //    }
 //
 //    OUTPUT_SET_0;
 //    // Hold output low until end of bit.
-//    while ( TCNT2 < AVC_NORMAL_BIT_LENGTH );
+//    while ( TCNT0 < AVC_NORMAL_BIT_LENGTH );
 //
 //    // Fetch next bit.
 //    data <<= 1;
@@ -361,11 +361,11 @@ bool AVCLanDrv::isAvcBusFree (void)
 //--------------------------------------------------------------------------------
 {
   // Reset timer.
-  TCNT2 = 0;
+  TCNT0 = 0;
 
   while (INPUT_IS_CLEAR) {
     // We assume the bus is free if anything happens for the length of 1 bit.
-    if (TCNT2 > AVC_NORMAL_BIT_LENGTH) {
+    if (TCNT0 > AVC_NORMAL_BIT_LENGTH) {
       return true;
     }
   }
@@ -384,21 +384,21 @@ bool AVCLanDrv::isAvcBusFree (void)
 //  // taken over the bus maintaining the pulse until the equivalent of a bit '0' (32 us) is formed.
 //
 //  // Reset timer to measure bit length.
-//  TCNT2 = 0;
+//  TCNT0 = 0;
 //  OUTPUT_SET_1;
 //
 //  // Generate bit '0'.
-//  while (TCNT2 < AVC_BIT_1_HOLD_ON_LENGTH);
+//  while (TCNT0 < AVC_BIT_1_HOLD_ON_LENGTH);
 //  OUTPUT_SET_0;
 //
 //  AVC_OUT_DIS;
 //
-//  while (TCNT2 < AVC_BIT_1_HOLD_ON_LENGTH + AVC_1U_LENGTH);
+//  while (TCNT0 < AVC_BIT_1_HOLD_ON_LENGTH + AVC_1U_LENGTH);
 //  // Measure final resulting bit.
 //  while ( INPUT_IS_SET );
 //
 //  // Sample half-way through bit '0' (26 us) to detect whether the target is acknowledging.
-//  if (TCNT2 > AVC_BIT_0_HOLD_ON_MIN_LENGTH) {
+//  if (TCNT0 > AVC_BIT_0_HOLD_ON_MIN_LENGTH) {
 //    // Slave is acknowledging (ack = 0). Wait until end of ack bit.
 //    while (INPUT_IS_SET );
 //    AVC_OUT_EN;

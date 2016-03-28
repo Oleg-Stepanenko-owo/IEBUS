@@ -13,17 +13,17 @@
 //********** arduino & driver based on PCA82C250 **********
 #ifdef AVCLAN_PCA82C250
 #define AVCLANDRIVER_TYPE    "Arduino - PCA82C250"
-// define out pin (pin 8 arduino)
+// define out pin (pin D6 arduino)
 #define  DATAOUT_DDR    DDRD
 #define  DATAOUT_PORT   PORTD
 #define  DATAOUT_PIN    PIND
-#define  DATAOUT        7
+#define  DATAOUT        6
 
-// define in pin (pin 9 arduino)
+// define in pin (pin D5 arduino)
 #define  DATAIN_DDR  DDRD
 #define  DATAIN_PORT PORTD
 #define  DATAIN_PIN  PIND
-#define  DATAIN      6
+#define  DATAIN      5
 
 // LED connected to digital pin 13
 #define  LED_DDR     DDRC
