@@ -7,21 +7,19 @@
 
 //--------------------------------------------------------------------------------
 #define LED_ON   sbi(LED_PORT, LED_OUT);
-#define LED_OFF   cbi(LED_PORT, LED_OUT);
+#define LED_OFF  cbi(LED_PORT, LED_OUT);
 
-#define HONDA_DIS_ON   sbi(LED_PORT, COMMUT_OUT);
-#define HONDA_DIS_OFF  cbi(LED_PORT, COMMUT_OUT);
+#define HONDA_DIS_ON   sbi(COMMUT_PORT, COMMUT_OUT);
+#define HONDA_DIS_OFF  cbi(COMMUT_PORT, COMMUT_OUT);
 
 static int MAX_ERROR_COUNT = 30;
 byte errorID;
 int  error_count;
+char BUFFF[15];
 //--------------------------------------------------------------------------------
 void setup()
 //--------------------------------------------------------------------------------
 {
-  sbi(LED_DDR,  COMMUT_OUT);
-  cbi(LED_PORT, COMMUT_OUT);
-
   avclan.begin();
   avclanHonda.begin();
   errorID = 0;
@@ -29,6 +27,7 @@ void setup()
 
   avclanBT.begin();
   avclanBT.println("Start HONDA avclan.");
+  LED_ON;
 }
 
 //--------------------------------------------------------------------------------
@@ -56,6 +55,10 @@ void loop()
 
       avclanHonda.getActionID();
       if ( avclan.actionID != ACT_NONE ) {
+        sprintf( BUFFF, "Action: %d", avclan.actionID );
+        avclanBT.println( BUFFF );
+
+        LED_ON;
         avclanHonda.processAction( (AvcActionID)avclan.actionID );
       }
     } else {
@@ -63,11 +66,6 @@ void loop()
       else error_count = 1;
 
       errorID = res;
-
-      if ( error_count > MAX_ERROR_COUNT ) {
-        error_count = 0;
-        avclanHonda.setHondaDis(true);
-      }
     }
   }
 
@@ -82,11 +80,14 @@ void loop()
     }
   }
 
-  if ( !error_count &&  errorID ) {
-    char BUFFF[15];
-    sprintf(BUFFF, "Error: %d", errorID);
+  if ( error_count > MAX_ERROR_COUNT ) {
+    error_count = 0;
+    avclanHonda.setHondaDis(true);
+
+    LED_OFF;
+
+    sprintf(BUFFF, "Error: %d", errorID );
     avclanBT.println( BUFFF );
-    delay(2000);
   }
 }
 
