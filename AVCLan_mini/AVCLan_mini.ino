@@ -1,11 +1,11 @@
 
+//--------------------------------------------------------------------------------
 #include "AVCLanDrv.h"
 #include "AVCLanHonda.h"
 #include "AVCLan_BT.h"
 #include "config.h"
 //--------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------
 #define LED_ON   sbi(LED_PORT, LED_OUT);
 #define LED_OFF  cbi(LED_PORT, LED_OUT);
 
@@ -16,10 +16,15 @@ static int MAX_ERROR_COUNT = 30;
 byte errorID;
 int  error_count;
 char BUFFF[15];
+
+char buf[12]; //buffer to store AT commands
+int len = 0; //stores the length of the commands
 //--------------------------------------------------------------------------------
 void setup()
 //--------------------------------------------------------------------------------
 {
+  Serial.begin(9600);
+
   avclan.begin();
   avclanHonda.begin();
   errorID = 0;
@@ -34,6 +39,17 @@ void setup()
 void loop()
 //--------------------------------------------------------------------------------
 {
+  if (avclanBT.available())
+  {
+    len = avclanBT.available();
+    int i;
+    Serial.print("len ="); Serial.println(len);
+    for (i = 0; i < len; i++)
+    {
+      avclanBT.checkCommand(avclanBT.read());
+    }
+  }
+
   if ( avclanHonda.bFirstStart_20 && (11500 > millis()) ) {
     HONDA_DIS_ON;  // initalize
     return;

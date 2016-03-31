@@ -18,7 +18,14 @@ class AVCLanBT
     void println( char*);
     void print(const char*);
 
+    char read();
+
+    bool isLogging();
+    int available();
+    void checkCommand(char command );
+
   private:
+    bool logging;
 };
 
 extern AVCLanBT avclanBT;

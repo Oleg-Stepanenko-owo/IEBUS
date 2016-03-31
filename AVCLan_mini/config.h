@@ -39,11 +39,6 @@
 #define LED_OUT		5
 
 
-// AZFM board activate
-//#define AZFM_INIT
-//#define AZFM_ON
-//#define AZFM_OFF
-
 #endif
 
 
