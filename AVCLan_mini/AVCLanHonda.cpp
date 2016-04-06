@@ -8,7 +8,7 @@
 
 //--------------------------------------------------------------------------------
 //const AvcInMessageTable  mtSearchHead[] PROGMEM = {
-//  { ACT_BUTTON_PRESS,   0x08,    0x05, {0x59, 0x0D, 0x31, 0x02, 0x01}, 0x03, {0x21, 0x01, 0xBE}},         // Button press
+//  { ACT_BUTTON_UP,   0x08,    0x05, {0x59, 0x0D, 0x31, 0x02, 0x01}, 0x03, {0x21, 0x01, 0xBE}},         // Button press
 //  { ACT_B_DISPOFF,      0x08,    0x05, {0x59, 0x0D, 0x31, 0x02, 0x01}, 0x03, {0x22, 0x71, 0x2F}},
 //  { ACT_B_DISPFULL,     0x08,    0x05, {0x59, 0x0D, 0x31, 0x02, 0x01}, 0x03, {0x20, 0x01, 0xBD}},
 //  { ACT_B_DISPHULF,     0x08,    0x05, {0x59, 0x0D, 0x31, 0x02, 0x01}, 0x03, {0x22, 0x11, 0xCF}},
@@ -23,18 +23,25 @@
 //  // 10 680231020200 05 13000000001D0000DE - vol = 1
 //};
 
+//TODO: master -> 131
+// 09780D3103024B000009 - next track ?
+// 08590D3102012212D0
+// 08590D3102012213D1
+// 08590D3102012214D2
+
 // { action_name,  packed_size, end_off_packege_word(check_sum)  }
 const AvcInCmdTable  mtSearchHead[] PROGMEM = {
-  { ACT_BUTTON_PRESS,   0x08,   0xBE},     // Button press
-  { ACT_B_DISPOFF,      0x08,   0x2F},
-  { ACT_B_DISPFULL,     0x08,   0xBD},
-  { ACT_B_DISPHULF,     0x08,   0xCF},
-  { ACT_CAM_ON,         0x09,   0x31},    // Cam ON
-  { ACT_CAM_OFF,        0x09,   0x30},    // Cam OFF
-  //        { ACT_DISP_HULF,      0x09,     0x30},    // display hulf color ???
-  { ACT_DISP_OFF,       0x09,   0x2E},    // display off
-  { ACT_TEL,            0x0A,   0xE3},	  // start Tel Action
-  { ACT_TEL_CANCEL,     0x0A,   0xDC}	  // Cancel or End Call_ACTION
+  { ACT_BUTTON_DOWN,       0x08,   0xBC},	    // 08590D3102012000BC
+  { ACT_BUTTON_UP,         0x08,   0xBE},     // 08590D3102012101BE
+  { ACT_B_DISPOFF,         0x08,   0x2F},     // 08590D31020122712F
+  { ACT_B_DISPFULL_DOWN,   0x08,   0x43},     // 08590D310201228543
+  { ACT_B_DISPFULL_UP,     0x08,   0xBD},     // 08590D3102012001BD
+  { ACT_B_DISPHULF,        0x08,   0xCF},     // 08590D3102012211CF
+  { ACT_CAM_ON,            0x09,   0x31},     // 09590D31020194000031
+  { ACT_CAM_OFF,           0x09,   0x30},     // 09590D31020191020030
+  { ACT_DISP_OFF,          0x09,   0x2E},     // 09590D3102019100002E
+  { ACT_TEL,               0x0A,   0xE3},	    // start Tel Action
+  { ACT_TEL_CANCEL,        0x0A,   0xDC}	    // Cancel or End Call_ACTION
   //        { ACT_VOL,            0x0A,    0x06, {0x68, 0x02, 0x31, 0x02, 0x02, 0x00}, 0x00, {0x00}}  //0x05 = 1
 };
 
@@ -95,7 +102,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
   if ( bFirstStart_20 && (20000 < millis()) ) bFirstStart_20 = false;
 
   switch ( ActionID ) {
-    case ACT_BUTTON_PRESS:
+    case ACT_BUTTON_UP:
       {
         if ( !bShowRearCam || !isWait() )
         {
@@ -111,9 +118,10 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
       bShowHondaDisp = true;
       setWaitTime(0L);
       break;
-    case ACT_DISP_OFF:
-      if ( !bShowRearCam )
-      {
+    case ACT_B_DISPOFF:
+    case ACT_B_DISPFULL_UP:
+    case ACT_B_DISPHULF:
+      if ( !bShowRearCam ) {
         // need freeze on 2000 sec after code receiving.
         bShowHondaDisp = false;
         bHondaDisLast = false;

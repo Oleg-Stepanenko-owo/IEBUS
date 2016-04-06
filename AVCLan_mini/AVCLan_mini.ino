@@ -23,7 +23,7 @@ int len = 0; //stores the length of the commands
 void setup()
 //--------------------------------------------------------------------------------
 {
-  Serial.begin(9600);
+  //  Serial.begin(9600);
 
   avclan.begin();
   avclanHonda.begin();
@@ -42,9 +42,8 @@ void loop()
   if (avclanBT.available())
   {
     len = avclanBT.available();
-    int i;
-    Serial.print("len ="); Serial.println(len);
-    for (i = 0; i < len; i++)
+    //    Serial.print("len ="); Serial.println(len);
+    for (int i = 0; i < len; i++)
     {
       avclanBT.checkCommand(avclanBT.read());
     }
@@ -67,8 +66,8 @@ void loop()
   if ( INPUT_IS_SET ) {
     byte res = avclan.readMessage();
     if ( !res ) {
+      avclan.printMessage(true);
       error_count = 0;
-
       avclanHonda.getActionID();
       if ( avclan.actionID != ACT_NONE ) {
         sprintf( BUFFF, "Action: %d", avclan.actionID );
@@ -97,13 +96,17 @@ void loop()
   }
 
   if ( error_count > MAX_ERROR_COUNT ) {
+    avclanHonda.bFirstStart_20 = false;
     error_count = 0;
     avclanHonda.setHondaDis(true);
 
     LED_OFF;
+    HONDA_DIS_ON;
 
     sprintf(BUFFF, "Error: %d", errorID );
     avclanBT.println( BUFFF );
+    avclan.begin();
+    cli();
   }
 }
 

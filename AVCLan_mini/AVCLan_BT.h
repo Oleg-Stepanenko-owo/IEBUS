@@ -17,7 +17,12 @@ class AVCLanBT
 
     void println( char*);
     void print(const char*);
+    void printHex4(uint8_t);
+    void printHex8(uint8_t);
+    void printDec(uint8_t);
+    void println(void);
 
+    void sendByte(uint8_t);
     char read();
 
     bool isLogging();
@@ -25,6 +30,7 @@ class AVCLanBT
     void checkCommand(char command );
 
   private:
+    void EERPOM_read_config();
     bool logging;
 };
 
