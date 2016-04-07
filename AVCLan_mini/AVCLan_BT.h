@@ -5,6 +5,7 @@
 
 #include <avr/pgmspace.h>
 #include "Arduino.h"
+#include "AVCLanHonda.h"
 
 //--------------------------------------------------------------------------------
 
@@ -28,6 +29,7 @@ class AVCLanBT
     bool isLogging();
     int available();
     void checkCommand(char command );
+    void printAction( AvcActionID ActionID );
 
   private:
     void EERPOM_read_config();

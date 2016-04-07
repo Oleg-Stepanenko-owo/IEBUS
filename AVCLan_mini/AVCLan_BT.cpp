@@ -145,6 +145,27 @@ void AVCLanBT::sendByte(uint8_t val)
 }
 
 //--------------------------------------------------------------------------------
+void AVCLanBT::printAction( AvcActionID ActionID )
+//--------------------------------------------------------------------------------
+{
+  switch ( ActionID )
+  {
+    case ACT_CAM_ON: 		mySerial.println(">>A:CAM ON<<");				break;
+    case ACT_CAM_OFF: 		mySerial.println(">>A:CAM OFF<<");				break;
+    case ACT_DISP_OFF: 		mySerial.println(">>A:DISP OFF<<");				break;
+    case ACT_BUTTON_DOWN: 	mySerial.println(">>A:BUTTON DOWN<<");			break;
+    case ACT_BUTTON_UP: 	mySerial.println(">>A:BUTTON UP<<");			break;
+    case ACT_B_DISPOFF:		mySerial.println(">>A:B_DISP_OFF<<"); 			break;
+    case ACT_B_DISPFULL_DOWN: mySerial.println(">>A:B_DISP_FULL_DOWN<<"); 	break;
+    case ACT_B_DISPFULL_UP:	mySerial.println(">>A:B_DISP_FULL_UP<<");		break;
+    case ACT_B_DISPHULF: 	mySerial.println(">>A:B_DISP_HILF<<");			break;
+    case ACT_TEL: 			mySerial.println(">>A:TEL<<");					break;
+    case ACT_TEL_CANCEL: 	mySerial.println(">>A:TEL CANCEL<<");			break;
+    default: 				mySerial.println(">>A:UNDEFINED<<");
+  }
+}
+
+//--------------------------------------------------------------------------------
 void AVCLanBT::EERPOM_read_config()
 //--------------------------------------------------------------------------------
 {

@@ -2,7 +2,7 @@
   config.h  - AVCLan driver config
   Created by Kochetkov Aleksey, 04.08.2010
 */
-#define IEBUS_VERSION "0.4"
+#define IEBUS_VERSION "0.5"
 
 // type of AVCLan hardwire driver
 #define AVCLAN_PCA82C250

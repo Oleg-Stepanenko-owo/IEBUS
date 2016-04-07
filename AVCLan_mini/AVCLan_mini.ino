@@ -23,15 +23,17 @@ int len = 0; //stores the length of the commands
 void setup()
 //--------------------------------------------------------------------------------
 {
-  //  Serial.begin(9600);
-
+  // Serial.begin(9600);
   avclan.begin();
   avclanHonda.begin();
   errorID = 0;
   error_count = 0;
 
   avclanBT.begin();
-  avclanBT.println("Start HONDA avclan.");
+  avclanBT.print("Start HONDA avclan.#");
+  sprintf( BUFFF, "%s", IEBUS_VERSION );
+  avclanBT.println( BUFFF );
+
   LED_ON;
 }
 
@@ -39,44 +41,53 @@ void setup()
 void loop()
 //--------------------------------------------------------------------------------
 {
-  if (avclanBT.available())
+  if ( avclanBT.available() )
   {
     len = avclanBT.available();
-    //    Serial.print("len ="); Serial.println(len);
-    for (int i = 0; i < len; i++)
-    {
-      avclanBT.checkCommand(avclanBT.read());
-    }
+    for (int i = 0; i < len; i++) avclanBT.checkCommand(avclanBT.read());
   }
 
-  if ( avclanHonda.bFirstStart_20 && (11500 > millis()) ) {
-    HONDA_DIS_ON;  // initalize
-    return;
-  } else if ( avclanHonda.bFirstStart_20  && !avclanHonda.isShowRearCam() && (11500 < millis()) ) {
+  if ( avclanHonda.bFirstStart_20  && !avclanHonda.isShowRearCam() && (11500 < millis()) )
+  {
     avclanHonda.setHondaDis( false ); //Show GVN screen
   }
 
   if ( avclanHonda.bFreeze ) {
-    if ( avclanHonda.freezeTime < millis() )  {
+    if ( avclanHonda.freezeTime < millis() ) {
       avclanHonda.bFreeze = false;
       avclanHonda.freezeTime = 0L;
-    } else return;
+    }
   }
 
   if ( INPUT_IS_SET ) {
     byte res = avclan.readMessage();
-    if ( !res ) {
+    if ( !res )
+    {
+      LED_OFF;
+
       avclan.printMessage(true);
       error_count = 0;
       avclanHonda.getActionID();
-      if ( avclan.actionID != ACT_NONE ) {
-        sprintf( BUFFF, "Action: %d", avclan.actionID );
-        avclanBT.println( BUFFF );
 
-        LED_ON;
+      if ( avclanHonda.bFirstStart_20 && (avclan.actionID == ACT_CAM_ON) )
+      {
+        avclanBT.printAction((AvcActionID)avclan.actionID);
         avclanHonda.processAction( (AvcActionID)avclan.actionID );
       }
-    } else {
+      else if ( (avclan.actionID != ACT_NONE) && ( 20000 < millis() ) && (!avclanHonda.bFreeze))
+      {
+        avclanBT.printAction((AvcActionID)avclan.actionID);
+        avclanHonda.processAction( (AvcActionID)avclan.actionID );
+      }
+      else
+      {
+        if ( avclanHonda.bFirstStart_20 ) avclanBT.println(">>FIRST_SKIP<<");
+        else if ( avclanHonda.bFreeze ) avclanBT.println(">>FREEZE_SKIP<<");
+      }
+      LED_ON;
+    }
+    else
+    {
       if ( errorID == res ) error_count++;
       else error_count = 1;
 
@@ -84,13 +95,19 @@ void loop()
     }
   }
 
-  if ( avclanHonda.isWait() ) {
+  if ( avclanHonda.isWait() )
+  {
     avclanHonda.checkWait();
     if ( !avclanHonda.isWait() ) avclanHonda.tryToShowHondaDisp();
-  } else {
-    if ( avclanHonda.getCommute() ) {
+  }
+  else
+  {
+    if ( avclanHonda.getCommute() )
+    {
       HONDA_DIS_ON;
-    } else {
+    }
+    else
+    {
       HONDA_DIS_OFF;
     }
   }
@@ -105,8 +122,8 @@ void loop()
 
     sprintf(BUFFF, "Error: %d", errorID );
     avclanBT.println( BUFFF );
-    avclan.begin();
-    cli();
+    //avclan.begin();
+    //cli();
   }
 }
 

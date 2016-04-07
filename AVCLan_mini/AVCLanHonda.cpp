@@ -53,8 +53,8 @@ void AVCLanHonda::begin()
 {
   avclan.deviceAddress = 0x0131;
 
-  bShowHondaDisp = false;
-  bHondaDisLast = false;
+  bShowHondaDisp = true;
+  bHondaDisLast = true;
   bShowRearCam =  false;
   bFirstStart_20 = true;
   bFreeze = false;
@@ -94,7 +94,8 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
 {
   if ( bFirstStart_20 && (20000 > millis()) && (ACT_CAM_ON == ActionID) ) {
     bShowRearCam = true;
-    bHondaDisLast = false; //after reverse action should be GVN screen
+    if ( 11500 > millis() ) bHondaDisLast = true;
+    else bHondaDisLast = false;
     bShowHondaDisp = true;
     return;
   }
