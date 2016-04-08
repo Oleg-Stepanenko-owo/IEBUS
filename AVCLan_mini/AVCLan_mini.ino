@@ -19,22 +19,33 @@ char BUFFF[15];
 
 char buf[12]; //buffer to store AT commands
 int len = 0; //stores the length of the commands
+
+//------ Error time updating -----------------------------------------------------
+unsigned long waitErrorTime;
+bool beforeErrorComute;
+#define ERROR_TIME 4000
+
 //--------------------------------------------------------------------------------
 void setup()
 //--------------------------------------------------------------------------------
 {
+  HONDA_DIS_ON;
+  HONDA_DIS_ON;
+  HONDA_DIS_ON;
+  LED_ON;
+
   // Serial.begin(9600);
   avclan.begin();
   avclanHonda.begin();
   errorID = 0;
   error_count = 0;
+  beforeErrorComute = 0;
+  waitErrorTime = 0;
 
   avclanBT.begin();
   avclanBT.print("Start HONDA avclan.#");
   sprintf( BUFFF, "%s", IEBUS_VERSION );
   avclanBT.println( BUFFF );
-
-  LED_ON;
 }
 
 //--------------------------------------------------------------------------------
@@ -84,7 +95,15 @@ void loop()
         if ( avclanHonda.bFirstStart_20 ) avclanBT.println(">>FIRST_SKIP<<");
         else if ( avclanHonda.bFreeze ) avclanBT.println(">>FREEZE_SKIP<<");
       }
+
       LED_ON;
+
+      if ( (0 != waitErrorTime) && (waitErrorTime < millis()) )
+      {
+        waitErrorTime = 0;
+        if ( !avclanHonda.isShowRearCam() )
+          avclanHonda.setHondaDis( beforeErrorComute );
+      }
     }
     else
     {
@@ -112,18 +131,21 @@ void loop()
     }
   }
 
+  //------- ERROR CHECKING BLOCK ----------------------------------
   if ( error_count > MAX_ERROR_COUNT ) {
     avclanHonda.bFirstStart_20 = false;
     error_count = 0;
-    avclanHonda.setHondaDis(true);
+
+    beforeErrorComute = avclanHonda.getCommute();
+    avclanHonda.setHondaDis(true); // Show Honda displ
+
+    waitErrorTime = millis() + ERROR_TIME;
 
     LED_OFF;
     HONDA_DIS_ON;
 
     sprintf(BUFFF, "Error: %d", errorID );
     avclanBT.println( BUFFF );
-    //avclan.begin();
-    //cli();
   }
 }
 
