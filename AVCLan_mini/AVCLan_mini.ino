@@ -12,25 +12,22 @@
 #define HONDA_DIS_ON   sbi(COMMUT_PORT, COMMUT_OUT);
 #define HONDA_DIS_OFF  cbi(COMMUT_PORT, COMMUT_OUT);
 
-static int MAX_ERROR_COUNT = 30;
-byte errorID;
-int  error_count;
 char BUFFF[15];
-
-char buf[12]; //buffer to store AT commands
 int len = 0; //stores the length of the commands
 
 //------ Error time updating -----------------------------------------------------
 unsigned long waitErrorTime;
 bool beforeErrorComute;
+static int MAX_ERROR_COUNT = 10;
+byte errorID;
+int  error_count;
+
 #define ERROR_TIME 4000
 
 //--------------------------------------------------------------------------------
 void setup()
 //--------------------------------------------------------------------------------
 {
-  HONDA_DIS_ON;
-  HONDA_DIS_ON;
   HONDA_DIS_ON;
   LED_ON;
 
@@ -75,6 +72,7 @@ void loop()
     if ( !res )
     {
       LED_OFF;
+      error_count = 0;
 
       avclan.printMessage(true);
       error_count = 0;
