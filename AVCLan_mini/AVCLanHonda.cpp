@@ -38,7 +38,7 @@ void AVCLanHonda::begin()
   avclan.deviceAddress = 0x0131;
 
   bShowHondaDisp = true;
-  bHondaDisLast = true;
+  setHondaDisLast(true);
   bShowRearCam =  false;
   bFirstStart_20 = true;
   bFreeze = false;
@@ -76,15 +76,18 @@ void AVCLanHonda::getActionID()
 void AVCLanHonda::processAction( AvcActionID ActionID )
 //--------------------------------------------------------------------------------
 {
-  if ( bFirstStart_20 && (20000 > millis()) && (ACT_CAM_ON == ActionID) ) {
-    bShowRearCam = true;
-    if ( 11500 > millis() ) bHondaDisLast = true;
-    else bHondaDisLast = false;
-    bShowHondaDisp = true;
-    return;
-  }
+  if ( bFirstStart_20 ) {
+    if ( (INIT2_TIME > millis()) && (ACT_CAM_ON == ActionID) ) {
+      bShowRearCam = true;
+      setHondaDisLast(false);
+      bShowHondaDisp = true;
+      bFirstStart_20 = false;
+      setWaitTime(0L);
+      return;
+    }
+    if ( INIT2_TIME < millis() ) bFirstStart_20 = false;
+    }
 
-  if ( bFirstStart_20 && (20000 < millis()) ) bFirstStart_20 = false;
 
   switch ( ActionID ) {
     case ACT_BUTTON_UP:
@@ -99,7 +102,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
       break;
     case ACT_CAM_ON:
       bShowRearCam = true;
-      bHondaDisLast = isShowHondaDisp();
+      setHondaDisLast( isShowHondaDisp() );
       bShowHondaDisp = true;
       setWaitTime(0L);
       break;
@@ -109,7 +112,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
       if ( !bShowRearCam ) {
         // need freeze on 2000 sec after code receiving.
         bShowHondaDisp = false;
-        bHondaDisLast = false;
+        setHondaDisLast( false );
         setWaitTime(0L);
         bFreeze = true;
         freezeTime = (millis() + FREEZE_TIME);
@@ -143,7 +146,7 @@ bool AVCLanHonda::getCommute()
 void AVCLanHonda::tryToShowHondaDisp()
 //--------------------------------------------------------------------------------
 {
-  bHondaDisLast = bShowHondaDisp;
+  setHondaDisLast( bShowHondaDisp );
   bShowHondaDisp = true;
 }
 
@@ -152,7 +155,7 @@ void AVCLanHonda::setHondaDis( bool val )
 //--------------------------------------------------------------------------------
 {
   bShowHondaDisp = val;
-  bHondaDisLast = val;
+  setHondaDisLast( val );
   setWaitTime(0L);
 }
 

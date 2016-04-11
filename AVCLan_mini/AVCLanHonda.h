@@ -70,6 +70,7 @@ class AVCLanHonda
 
     inline bool isShowRearCam() const;
     inline bool isShowHondaDisp() const;
+    inline void setHondaDisLast( bool val );
 
     void checkWait();
     void checkLock();
@@ -96,14 +97,21 @@ class AVCLanHonda
 unsigned long AVCLanHonda::getWaitTime() const {
   return waitTime;
 }
+
 bool AVCLanHonda::isWait() const {
   return bWait;
 };
+
 bool AVCLanHonda::isShowRearCam() const {
   return bShowRearCam;
 };
+
 bool AVCLanHonda::isShowHondaDisp() const {
   return bShowHondaDisp;
+}
+
+void AVCLanHonda::setHondaDisLast( bool val ) {
+  bHondaDisLast = val;
 }
 
 extern AVCLanHonda avclanHonda;

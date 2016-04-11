@@ -12,11 +12,12 @@
 #define HONDA_DIS_ON   sbi(COMMUT_PORT, COMMUT_OUT);
 #define HONDA_DIS_OFF  cbi(COMMUT_PORT, COMMUT_OUT);
 
+
 char BUFFF[15];
 int len = 0; //stores the length of the commands
 
 //------ Error time updating -----------------------------------------------------
-unsigned long waitErrorTime;
+// unsigned long waitErrorTime;
 bool beforeErrorComute;
 static int MAX_ERROR_COUNT = 10;
 byte errorID;
@@ -37,7 +38,7 @@ void setup()
   errorID = 0;
   error_count = 0;
   beforeErrorComute = 0;
-  waitErrorTime = 0;
+  // waitErrorTime = 0;
 
   avclanBT.begin();
   avclanBT.print("Start HONDA avclan.#");
@@ -55,7 +56,7 @@ void loop()
     for (int i = 0; i < len; i++) avclanBT.checkCommand(avclanBT.read());
   }
 
-  if ( avclanHonda.bFirstStart_20  && !avclanHonda.isShowRearCam() && (11500 < millis()) )
+  if ( avclanHonda.bFirstStart_20  && !avclanHonda.isShowRearCam() && (INIT_TIME < millis()) )
   {
     avclanHonda.setHondaDis( false ); //Show GVN screen
   }
@@ -75,38 +76,39 @@ void loop()
       error_count = 0;
 
       avclan.printMessage(true);
-      error_count = 0;
       avclanHonda.getActionID();
 
       if ( avclanHonda.bFirstStart_20 && (avclan.actionID == ACT_CAM_ON) )
       {
-        avclanBT.printAction((AvcActionID)avclan.actionID);
+        avclanBT.printAction( (AvcActionID)avclan.actionID );
         avclanHonda.processAction( (AvcActionID)avclan.actionID );
       }
-      else if ( (avclan.actionID != ACT_NONE) && ( 20000 < millis() ) && (!avclanHonda.bFreeze))
+      else if ( (avclan.actionID != ACT_NONE) && ( INIT2_TIME < millis() ) && (!avclanHonda.bFreeze))
       {
         avclanBT.printAction((AvcActionID)avclan.actionID);
         avclanHonda.processAction( (AvcActionID)avclan.actionID );
       }
-      else
+      else // first 20 sek we should react only on rear cam on/off
       {
-        if ( avclanHonda.bFirstStart_20 ) avclanBT.println(">>FIRST_SKIP<<");
-        else if ( avclanHonda.bFreeze ) avclanBT.println(">>FREEZE_SKIP<<");
+        // if ( avclanHonda.bFirstStart_20 ) avclanBT.println(">>FIRST_SKIP<<");
+        // else if ( avclanHonda.bFreeze ) avclanBT.println(">>FREEZE_SKIP<<");
       }
 
       LED_ON;
 
-      if ( (0 != waitErrorTime) && (waitErrorTime < millis()) )
+      // back to screeen that was before Error:
+      if ( error_count >= MAX_ERROR_COUNT )
       {
-        waitErrorTime = 0;
+        error_count = 0;
         if ( !avclanHonda.isShowRearCam() )
           avclanHonda.setHondaDis( beforeErrorComute );
+        else avclanHonda.setHondaDisLast( false ); //after error and rear cam off - try to show GVN display
       }
     }
     else
     {
       if ( errorID == res ) error_count++;
-      else error_count = 1;
+      else error_count = 0;
 
       errorID = res;
     }
@@ -130,14 +132,12 @@ void loop()
   }
 
   //------- ERROR CHECKING BLOCK ----------------------------------
-  if ( error_count > MAX_ERROR_COUNT ) {
-    avclanHonda.bFirstStart_20 = false;
+  if ( (error_count > MAX_ERROR_COUNT) && !avclanHonda.isShowHondaDisp() ) {
+//    avclanHonda.bFirstStart_20 = false;
     error_count = 0;
 
     beforeErrorComute = avclanHonda.getCommute();
-    avclanHonda.setHondaDis(true); // Show Honda displ
-
-    waitErrorTime = millis() + ERROR_TIME;
+    avclanHonda.setHondaDis(true); // Show Honda display
 
     LED_OFF;
     HONDA_DIS_ON;

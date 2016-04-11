@@ -1,4 +1,4 @@
-#define IEBUS_VERSION "0.6"
+#define IEBUS_VERSION "0.7"
 
 // type of AVCLan hardwire driver
 #define AVCLAN_PCA82C250
@@ -34,6 +34,8 @@
 #define LED_PIN		PINB
 #define LED_OUT		5
 
+#define INIT_TIME 13000
+#define INIT2_TIME 20000
 
 #endif
 
