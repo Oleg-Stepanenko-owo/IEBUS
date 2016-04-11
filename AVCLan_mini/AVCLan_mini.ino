@@ -78,12 +78,12 @@ void loop()
       avclan.printMessage(true);
       avclanHonda.getActionID();
 
-      if ( avclanHonda.bFirstStart_20 && (avclan.actionID == ACT_CAM_ON) )
+      if ( (INIT2_TIME > millis()) && (avclan.actionID == ACT_CAM_ON) )
       {
         avclanBT.printAction( (AvcActionID)avclan.actionID );
         avclanHonda.processAction( (AvcActionID)avclan.actionID );
       }
-      else if ( (avclan.actionID != ACT_NONE) && ( INIT2_TIME < millis() ) && (!avclanHonda.bFreeze))
+      else if ( (avclan.actionID != ACT_NONE) && ( INIT2_TIME < millis() ) && (!avclanHonda.bFreeze) )
       {
         avclanBT.printAction((AvcActionID)avclan.actionID);
         avclanHonda.processAction( (AvcActionID)avclan.actionID );
@@ -133,7 +133,7 @@ void loop()
 
   //------- ERROR CHECKING BLOCK ----------------------------------
   if ( (error_count > MAX_ERROR_COUNT) && !avclanHonda.isShowHondaDisp() ) {
-//    avclanHonda.bFirstStart_20 = false;
+    //    avclanHonda.bFirstStart_20 = false;
     error_count = 0;
 
     beforeErrorComute = avclanHonda.getCommute();

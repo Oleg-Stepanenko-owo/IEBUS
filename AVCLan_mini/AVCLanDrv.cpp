@@ -544,7 +544,12 @@ byte AVCLanDrv::getActionID(const AvcInCmdTable messageTable[], byte mtSize)
     return ACT_NONE;
   }
 
-  byte idx = ((dataSize == 8) ? 0 : (dataSize == 9 ? 6 : 9)); // position in AvcInMessageTable
+  // position in AvcInMessageTable
+  byte idx = 0;
+  if (dataSize == 6) 		idx = 0;
+  else if (dataSize == 8) 	idx = 1;
+  else if (dataSize == 9) 	idx = 7;
+  else 						idx = 10;
 
   for (; idx < mtSize; ++idx) {
     if (dataSize != pgm_read_byte_near(&messageTable[idx].dataSize)) return ACT_NONE; // Because first unsized value from other range

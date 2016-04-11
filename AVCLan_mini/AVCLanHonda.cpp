@@ -2,20 +2,31 @@
 #include "limits.h"
 #include "AVCLanDrv.h"
 #include "AVCLanHonda.h"
+#include "AVCLan_BT.h"
 
 #include <avr/pgmspace.h>
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
 //TODO: master -> 131
+// < d 183 131 06170D31020158
+// +++
+// < d 183 131 08590D31020122712F
+// Rear camm off
+
 // 09780D3103024B000009 - next track ?
 // 08590D3102012212D0
 // 08590D3102012213D1
 // 08590D3102012214D2
+// 0618023102004D - mute button press
+// < d 183 100 0B600D01000140165400000B - time 16:54
+// < d 100 183 0D60073100010003011018FF5008 - FM1 101.8
+// 0D60073100010000021014FF5002 - FM2 101.4
 
 // { action_name,  packed_size, end_off_packege_word(check_sum)  }
 const AvcInCmdTable  mtSearchHead[] PROGMEM = {
-  { ACT_BUTTON_DOWN,       0x08,   0xBC},	    // 08590D3102012000BC
+  { ACT_PREP_CAMOFF,       0x06,   0x58},      //06170D31020158
+  { ACT_BUTTON_DOWN,       0x08,   0xBC},	   // 08590D3102012000BC
   { ACT_BUTTON_UP,         0x08,   0xBE},     // 08590D3102012101BE
   { ACT_B_DISPOFF,         0x08,   0x2F},     // 08590D31020122712F
   { ACT_B_DISPFULL_DOWN,   0x08,   0x43},     // 08590D310201228543
@@ -24,8 +35,8 @@ const AvcInCmdTable  mtSearchHead[] PROGMEM = {
   { ACT_CAM_ON,            0x09,   0x31},     // 09590D31020194000031
   { ACT_CAM_OFF,           0x09,   0x30},     // 09590D31020191020030
   { ACT_DISP_OFF,          0x09,   0x2E},     // 09590D3102019100002E
-  { ACT_TEL,               0x0A,   0xE3},	    // start Tel Action
-  { ACT_TEL_CANCEL,        0x0A,   0xDC}	    // Cancel or End Call_ACTION
+  { ACT_TEL,               0x0A,   0xE3},	  // start Tel Action
+  { ACT_TEL_CANCEL,        0x0A,   0xDC}	  // Cancel or End Call_ACTION
   //        { ACT_VOL,            0x0A,    0x06, {0x68, 0x02, 0x31, 0x02, 0x02, 0x00}, 0x00, {0x00}}  //0x05 = 1
 };
 
@@ -37,6 +48,7 @@ void AVCLanHonda::begin()
 {
   avclan.deviceAddress = 0x0131;
 
+  bPrepareCamOff = false;
   bShowHondaDisp = true;
   setHondaDisLast(true);
   bShowRearCam =  false;
@@ -86,8 +98,12 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
       return;
     }
     if ( INIT2_TIME < millis() ) bFirstStart_20 = false;
-    }
+  }
 
+  if ( bPrepareCamOff && (ACT_B_DISPOFF == ActionID) ) {
+    ActionID = ACT_CAM_OFF;
+    avclanBT.print("CAMOFF+DISPOFF");
+  } else bPrepareCamOff = false;
 
   switch ( ActionID ) {
     case ACT_BUTTON_UP:
@@ -122,6 +138,9 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
       bShowRearCam = false;
       bShowHondaDisp = bHondaDisLast;
       setWaitTime(0L);
+      break;
+    case ACT_PREP_CAMOFF:
+      bPrepareCamOff = true;
       break;
   }
 };

@@ -161,6 +161,7 @@ void AVCLanBT::printAction( AvcActionID ActionID )
     case ACT_B_DISPHULF: 	mySerial.println(">>A:B_DISP_HILF<<");			break;
     case ACT_TEL: 			mySerial.println(">>A:TEL<<");					break;
     case ACT_TEL_CANCEL: 	mySerial.println(">>A:TEL CANCEL<<");			break;
+    case ACT_PREP_CAMOFF:   mySerial.println(">>A:PREP_CAMOFF<<");			break;
     default: 				mySerial.println(">>A:UNDEFINED<<");
   }
 }

@@ -44,7 +44,8 @@ typedef enum {
   ACT_B_DISPFULL_UP,
   ACT_B_DISPHULF,
   ACT_TEL,
-  ACT_TEL_CANCEL
+  ACT_TEL_CANCEL,
+  ACT_PREP_CAMOFF
   //  ACT_VOL
 } AvcActionID;
 
@@ -84,10 +85,9 @@ class AVCLanHonda
   private:
     unsigned long waitTime;
 
-
     bool bWait;
 
-
+    bool bPrepareCamOff;
     bool bShowRearCam;
     bool bShowHondaDisp;
     bool bTimeSwitch;
