@@ -41,9 +41,9 @@ void setup()
   // waitErrorTime = 0;
 
   avclanBT.begin();
-  avclanBT.print("Start HONDA avclan.#");
+  avclanBT.print("Start HONDA avclan.#", true );
   sprintf( BUFFF, "%s", IEBUS_VERSION );
-  avclanBT.println( BUFFF );
+  avclanBT.println( BUFFF, true );
 }
 
 //--------------------------------------------------------------------------------
@@ -58,6 +58,7 @@ void loop()
 
   if ( avclanHonda.bFirstStart_20  && !avclanHonda.isShowRearCam() && (INIT_TIME < millis()) )
   {
+    avclanBT.print("[setHondaDis = false]");
     avclanHonda.setHondaDis( false ); //Show GVN screen
   }
 
@@ -65,6 +66,7 @@ void loop()
     if ( avclanHonda.freezeTime < millis() ) {
       avclanHonda.bFreeze = false;
       avclanHonda.freezeTime = 0L;
+      avclanBT.print("[reset freezeTime]");
     }
   }
 
@@ -78,20 +80,25 @@ void loop()
       avclan.printMessage(true);
       avclanHonda.getActionID();
 
-      if ( (INIT2_TIME > millis()) && (avclan.actionID == ACT_CAM_ON) )
+      if ( avclan.actionID != ACT_NONE )
       {
-        avclanBT.printAction( (AvcActionID)avclan.actionID );
-        avclanHonda.processAction( (AvcActionID)avclan.actionID );
-      }
-      else if ( (avclan.actionID != ACT_NONE) && ( INIT2_TIME < millis() ) && (!avclanHonda.bFreeze) )
-      {
-        avclanBT.printAction((AvcActionID)avclan.actionID);
-        avclanHonda.processAction( (AvcActionID)avclan.actionID );
-      }
-      else // first 20 sek we should react only on rear cam on/off
-      {
-        // if ( avclanHonda.bFirstStart_20 ) avclanBT.println(">>FIRST_SKIP<<");
-        // else if ( avclanHonda.bFreeze ) avclanBT.println(">>FREEZE_SKIP<<");
+        if ( (INIT2_TIME > millis()) && (avclan.actionID == ACT_CAM_ON) )
+        {
+          avclanBT.println("[Time < INIT2_TIME]");
+          avclanBT.printAction( (AvcActionID)avclan.actionID );
+          avclanHonda.processAction( (AvcActionID)avclan.actionID );
+        }
+        else if ( ( INIT2_TIME < millis() ) && (!avclanHonda.bFreeze) )
+        {
+          avclanBT.printAction((AvcActionID)avclan.actionID);
+          avclanHonda.processAction( (AvcActionID)avclan.actionID );
+        }
+        else // first 20 sek we should react only on rear cam on/off
+        {
+          avclanBT.println("[------SKIP------]");
+          avclanBT.printAction( (AvcActionID)avclan.actionID );
+          avclanBT.println("[----------------]");
+        }
       }
 
       LED_ON;
@@ -117,17 +124,22 @@ void loop()
   if ( avclanHonda.isWait() )
   {
     avclanHonda.checkWait();
-    if ( !avclanHonda.isWait() ) avclanHonda.tryToShowHondaDisp();
+    if ( !avclanHonda.isWait() ) {
+      avclanBT.println("[reset isWait]");
+      avclanHonda.tryToShowHondaDisp();
+    }
   }
   else
   {
     if ( avclanHonda.getCommute() )
     {
       HONDA_DIS_ON;
+      avclanBT.println("[HONDA_DIS_ON]");
     }
     else
     {
       HONDA_DIS_OFF;
+      avclanBT.println("[HONDA_DIS_OFF]");
     }
   }
 
@@ -141,9 +153,10 @@ void loop()
 
     LED_OFF;
     HONDA_DIS_ON;
+    avclanBT.println("[HONDA_DIS_ON]");
 
     sprintf(BUFFF, "Error: %d", errorID );
-    avclanBT.println( BUFFF );
+    avclanBT.println( BUFFF, true );
   }
 }
 

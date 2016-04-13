@@ -16,12 +16,12 @@ class AVCLanBT
   public:
     void begin ();                    // initialisation, obligatory method
 
-    void println( char*);
-    void print(const char*);
+    void println( char*, bool bLogging = false );
+    void print(const char*, bool bLogging = false );
     void printHex4(uint8_t);
     void printHex8(uint8_t);
     void printDec(uint8_t);
-    void println(void);
+    void println( bool bLogging = false );
 
     void sendByte(uint8_t);
     char read();

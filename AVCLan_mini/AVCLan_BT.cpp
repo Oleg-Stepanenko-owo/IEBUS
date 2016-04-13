@@ -29,17 +29,19 @@ void AVCLanBT::begin()
 }
 
 //--------------------------------------------------------------------------------
-void AVCLanBT::println( char* val )
+void AVCLanBT::println( char* val, bool bLogging )
 //--------------------------------------------------------------------------------
 {
-  mySerial.println( val );
+  if ( bLogging || logging )
+    mySerial.println( val );
 }
 
 //--------------------------------------------------------------------------------
-void AVCLanBT::print( const char* val )
+void AVCLanBT::print( const char* val, bool bLogging )
 //--------------------------------------------------------------------------------
 {
-  mySerial.print( val );
+  if ( bLogging || logging )
+    mySerial.print( val );
 }
 
 //--------------------------------------------------------------------------------
@@ -95,10 +97,11 @@ void AVCLanBT::checkCommand( char command )
 }
 
 //--------------------------------------------------------------------------------
-void AVCLanBT::println(void)
+void AVCLanBT::println( bool bLogging )
 //--------------------------------------------------------------------------------
 {
-  print("\r\n");
+  if ( bLogging || logging )
+    mySerial.print("\r\n");
 }
 
 //--------------------------------------------------------------------------------

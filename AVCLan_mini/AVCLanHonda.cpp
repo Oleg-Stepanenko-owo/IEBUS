@@ -102,7 +102,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
 
   if ( bPrepareCamOff && (ACT_B_DISPOFF == ActionID) ) {
     ActionID = ACT_CAM_OFF;
-    avclanBT.print("CAMOFF+DISPOFF");
+    avclanBT.println("[CAMOFF+DISPOFF]");
   } else bPrepareCamOff = false;
 
   switch ( ActionID ) {
