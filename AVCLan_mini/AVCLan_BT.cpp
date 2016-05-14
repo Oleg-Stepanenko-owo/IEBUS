@@ -3,9 +3,23 @@
 #include <SoftwareSerial.h>
 #include <avr/pgmspace.h>
 #include <EEPROM.h>
-
+//--------------------------------------------------------------------------------
+// *1 - Rear camera ON
+// *2 - Rear camera Off
+// *3 - Display off
+// *4 - Button donw
+// *5 - >>A:BUTTON UP<<"
+// *6 ">>A:B_DISP_OFF<<"
+// *7 ">>A:B_DISP_FULL_DOWN<<"
+// *8 ">>A:B_DISP_FULL_UP<<"
+// *9 ">>A:B_DISP_HILF<<"
+// *10  ">>A:TEL<<"
+// *11  ">>A:TEL CANCEL<<"
+// *12 ">>A:PREP_CAMOFF<<"
+// *99 ">>A:UNDEFINED<<");
 //--------------------------------------------------------------------------------
 #define E_LOGG 0
+#define E_DISPLAY 0
 
 //--------------------------------------------------------------------------------
 SoftwareSerial mySerial(4, 3); // RX | TX
@@ -16,11 +30,16 @@ bool startCommand;
 void AVCLanBT::begin()
 //--------------------------------------------------------------------------------
 {
+  dispalyStatus = 0;
   mySerial.begin(9600);
-  mySerial.println("BlueTooth is ready");
-  mySerial.println("@log+@ - start logging");
-  mySerial.println("@log-@ - end logging");
-  mySerial.println("@save@ - save logging in EEPROM");
+  mySerial.println("BlueTooth:");
+  mySerial.println("@l+@");
+  mySerial.println("@l-@");
+  mySerial.println("@s@");
+  mySerial.println("@d0,1,2@");
+  // d0 - default
+  // d1 - always HONDA
+  // d2 - always GVN
   logging = false;
   command_i = 0;
   startCommand = false;
@@ -79,20 +98,27 @@ void AVCLanBT::checkCommand( char command )
     command_buff[command_i] = '\0';
     startCommand = false;
 
-    if ( 0 == strcmp( command_buff, "log+" )  ) {
+    if ( 0 == strcmp( command_buff, "l+" )  ) {
       logging = true;
-      mySerial.println(">>Logging ON<<");
-      //      Serial.println(">>Logging ON<<");
-    } else if ( 0 == strcmp( command_buff, "log-" )  ) {
-      mySerial.println(">>Logging OFF<<");
-      //      Serial.println(">>Logging OFF<<");
+      mySerial.println("#ON");
+    } else if ( 0 == strcmp( command_buff, "l-" )  ) {
+      mySerial.println("#OFF");
       logging = false;
-    } else if ( 0 == strcmp( command_buff, "save" ) ) {
+    } else if ( 0 == strcmp( command_buff, "s" ) ) {
       EEPROM.write( E_LOGG, (int)logging );
+      EEPROM.write( E_DISPLAY, dispalyStatus );
+      mySerial.println("#Store");
+    } else if ( 0 == strcmp( command_buff, "d0" ) ) {
+      dispalyStatus = 0;
+      mySerial.println("#D0");
+    } else if ( 0 == strcmp( command_buff, "d1" ) ) {
+      dispalyStatus = 1;
+      mySerial.println("#D1");
+    } else if ( 0 == strcmp( command_buff, "d2" ) ) {
+      dispalyStatus = 2;
+      mySerial.println("#D2");
     }
-
     println(command_buff);
-    //    Serial.println(command_buff);
   }
 }
 
@@ -153,29 +179,38 @@ void AVCLanBT::printAction( AvcActionID ActionID )
 {
   switch ( ActionID )
   {
-    case ACT_CAM_ON: 		mySerial.println(">>A:CAM ON<<");				break;
-    case ACT_CAM_OFF: 		mySerial.println(">>A:CAM OFF<<");				break;
-    case ACT_DISP_OFF: 		mySerial.println(">>A:DISP OFF<<");				break;
-    case ACT_BUTTON_DOWN: 	mySerial.println(">>A:BUTTON DOWN<<");			break;
-    case ACT_BUTTON_UP: 	mySerial.println(">>A:BUTTON UP<<");			break;
-    case ACT_B_DISPOFF:		mySerial.println(">>A:B_DISP_OFF<<"); 			break;
-    case ACT_B_DISPFULL_DOWN: mySerial.println(">>A:B_DISP_FULL_DOWN<<"); 	break;
-    case ACT_B_DISPFULL_UP:	mySerial.println(">>A:B_DISP_FULL_UP<<");		break;
-    case ACT_B_DISPHULF: 	mySerial.println(">>A:B_DISP_HILF<<");			break;
-    case ACT_TEL: 			mySerial.println(">>A:TEL<<");					break;
-    case ACT_TEL_CANCEL: 	mySerial.println(">>A:TEL CANCEL<<");			break;
-    case ACT_PREP_CAMOFF:   mySerial.println(">>A:PREP_CAMOFF<<");			break;
-    default: 				mySerial.println(">>A:UNDEFINED<<");
+    case ACT_CAM_ON: 		mySerial.println("*1");				break;
+    case ACT_CAM_OFF: 		mySerial.println("*2");				break;
+    case ACT_DISP_OFF: 		mySerial.println("*3");				break;
+    case ACT_BUTTON_DOWN: 	mySerial.println("*4");			break;
+    case ACT_BUTTON_UP: 	mySerial.println("*5");			break;
+    case ACT_B_DISPOFF:		mySerial.println("*6"); 			break;
+    case ACT_B_DISPFULL_DOWN: mySerial.println("*7"); 	break;
+    case ACT_B_DISPFULL_UP:	mySerial.println("*8");		break;
+    case ACT_B_DISPHULF: 	mySerial.println("*9");			break;
+    case ACT_TEL: 			mySerial.println("*10");					break;
+    case ACT_TEL_CANCEL: 	mySerial.println("*11");			break;
+    case ACT_PREP_CAMOFF:   mySerial.println("*12");			break;
+    default: 				mySerial.println("*99");
   }
+}
+
+//--------------------------------------------------------------------------------
+int AVCLanBT::getDisplayStatus()
+//--------------------------------------------------------------------------------
+{
+  return dispalyStatus;
 }
 
 //--------------------------------------------------------------------------------
 void AVCLanBT::EERPOM_read_config()
 //--------------------------------------------------------------------------------
 {
-  if (EEPROM.read(E_LOGG) == 1 ) logging = true;
+  if ( EEPROM.read(E_LOGG) == 1 ) logging = true;
+  dispalyStatus = EEPROM.read(E_DISPLAY);
 
   logging ? mySerial.println(">>Logging ON<<") : mySerial.println(">>Logging OFF<<");
+  mySerial.print("DisplStatus:"); mySerial.println(dispalyStatus);
 }
 
 AVCLanBT avclanBT;

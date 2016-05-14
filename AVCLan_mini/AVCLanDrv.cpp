@@ -99,7 +99,6 @@ byte AVCLanDrv::_readMessage ()
 
   if (t < AVC_START_BIT_HOLD_ON_MIN_LENGTH) {
     //if (t < 0x16){
-    avclanBT.print("-->t=", true); avclanBT.printDec(t); avclanBT.println();
     SREG = oldSREG;
     return 2;
   }
@@ -531,7 +530,6 @@ void AVCLanDrv::printMessage(bool incoming)
     avclanBT.printHex8(message[i]);
   }
   avclanBT.println();
-
 }
 
 

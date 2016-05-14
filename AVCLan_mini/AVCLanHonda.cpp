@@ -95,6 +95,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
       bShowHondaDisp = true;
       bFirstStart_20 = false;
       setWaitTime(0L);
+      avclanBT.println("#8");
       return;
     }
     if ( INIT2_TIME < millis() ) bFirstStart_20 = false;
@@ -102,7 +103,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
 
   if ( bPrepareCamOff && (ACT_B_DISPOFF == ActionID) ) {
     ActionID = ACT_CAM_OFF;
-    avclanBT.println("[CAMOFF+DISPOFF]");
+    avclanBT.println("#9");
   } else bPrepareCamOff = false;
 
   switch ( ActionID ) {
@@ -113,6 +114,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
           if ( ULONG_MAX > (millis() + BUTT_WAIT) )
             setWaitTime( (unsigned long)((millis() + BUTT_WAIT)) );
           else setWaitTime( BUTT_WAIT );
+          avclanBT.println("#10");
         }
       }
       break;
@@ -121,6 +123,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
       setHondaDisLast( isShowHondaDisp() );
       bShowHondaDisp = true;
       setWaitTime(0L);
+      avclanBT.println("#11");
       break;
     case ACT_B_DISPOFF:
     case ACT_B_DISPFULL_UP:
@@ -130,6 +133,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
         bShowHondaDisp = false;
         setHondaDisLast( false );
         setWaitTime(0L);
+        avclanBT.println("#11");
         bFreeze = true;
         freezeTime = (millis() + FREEZE_TIME);
       }
@@ -138,6 +142,7 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
       bShowRearCam = false;
       bShowHondaDisp = bHondaDisLast;
       setWaitTime(0L);
+      avclanBT.println("#11");
       break;
     case ACT_PREP_CAMOFF:
       bPrepareCamOff = true;
@@ -176,6 +181,8 @@ void AVCLanHonda::setHondaDis( bool val )
   bShowHondaDisp = val;
   setHondaDisLast( val );
   setWaitTime(0L);
+  if( val ) avclanBT.println("#2");
+  else avclanBT.println("#16");
 }
 
 

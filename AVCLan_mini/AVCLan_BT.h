@@ -31,9 +31,12 @@ class AVCLanBT
     void checkCommand(char command );
     void printAction( AvcActionID ActionID );
 
+    int getDisplayStatus();
+
   private:
     void EERPOM_read_config();
     bool logging;
+    int dispalyStatus;
 };
 
 extern AVCLanBT avclanBT;
