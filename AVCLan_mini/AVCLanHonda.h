@@ -87,7 +87,7 @@ class AVCLanHonda
 
     bool bWait;
 
-    bool bPrepareCamOff;
+    //    bool bPrepareCamOff;
     bool bShowRearCam;
     bool bShowHondaDisp;
     bool bTimeSwitch;

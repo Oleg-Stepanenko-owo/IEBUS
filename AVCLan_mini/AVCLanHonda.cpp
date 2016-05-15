@@ -25,8 +25,8 @@
 
 // { action_name,  packed_size, end_off_packege_word(check_sum)  }
 const AvcInCmdTable  mtSearchHead[] PROGMEM = {
-  { ACT_PREP_CAMOFF,       0x06,   0x58},      //06170D31020158
-  { ACT_BUTTON_DOWN,       0x08,   0xBC},	   // 08590D3102012000BC
+  { ACT_PREP_CAMOFF,       0x06,   0x58},     // 06170D31020158
+  { ACT_BUTTON_DOWN,       0x08,   0xBC},	    // 08590D3102012000BC
   { ACT_BUTTON_UP,         0x08,   0xBE},     // 08590D3102012101BE
   { ACT_B_DISPOFF,         0x08,   0x2F},     // 08590D31020122712F
   { ACT_B_DISPFULL_DOWN,   0x08,   0x43},     // 08590D310201228543
@@ -46,9 +46,9 @@ const byte mtSearchHeadSize = sizeof(mtSearchHead) / sizeof(AvcInCmdTable);
 void AVCLanHonda::begin()
 //--------------------------------------------------------------------------------
 {
-  avclan.deviceAddress = 0x0131;
+  // avclan.deviceAddress = 0x0131;
 
-  bPrepareCamOff = false;
+  //  bPrepareCamOff = false;
   bShowHondaDisp = true;
   setHondaDisLast(true);
   bShowRearCam =  false;
@@ -81,6 +81,7 @@ void AVCLanHonda::getActionID()
 //--------------------------------------------------------------------------------
 {
   avclan.actionID = avclan.getActionID( mtSearchHead, mtSearchHeadSize );
+  avclanBT.println("#17");
 };
 
 // process action
@@ -101,10 +102,10 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
     if ( INIT2_TIME < millis() ) bFirstStart_20 = false;
   }
 
-  if ( bPrepareCamOff && (ACT_B_DISPOFF == ActionID) ) {
-    ActionID = ACT_CAM_OFF;
-    avclanBT.println("#9");
-  } else bPrepareCamOff = false;
+  //  if ( bPrepareCamOff && (ACT_B_DISPOFF == ActionID) ) {
+  //    ActionID = ACT_CAM_OFF;
+  //    avclanBT.println("#9");
+  //  } else bPrepareCamOff = false;
 
   switch ( ActionID ) {
     case ACT_BUTTON_UP:
@@ -138,15 +139,16 @@ void AVCLanHonda::processAction( AvcActionID ActionID )
         freezeTime = (millis() + FREEZE_TIME);
       }
       break;
+    case ACT_PREP_CAMOFF:
     case ACT_CAM_OFF:
       bShowRearCam = false;
       bShowHondaDisp = bHondaDisLast;
       setWaitTime(0L);
       avclanBT.println("#11");
       break;
-    case ACT_PREP_CAMOFF:
-      bPrepareCamOff = true;
-      break;
+      //    case ACT_PREP_CAMOFF:
+      //      bPrepareCamOff = true;
+      //      break;
   }
 };
 
@@ -181,11 +183,8 @@ void AVCLanHonda::setHondaDis( bool val )
   bShowHondaDisp = val;
   setHondaDisLast( val );
   setWaitTime(0L);
-  if( val ) avclanBT.println("#2");
+  if ( val ) avclanBT.println("#2");
   else avclanBT.println("#16");
 }
 
-
 AVCLanHonda avclanHonda;
-
-

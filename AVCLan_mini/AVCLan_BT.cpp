@@ -19,7 +19,7 @@
 // *99 ">>A:UNDEFINED<<");
 //--------------------------------------------------------------------------------
 #define E_LOGG 0
-#define E_DISPLAY 0
+#define E_DISPLAY 1
 
 //--------------------------------------------------------------------------------
 SoftwareSerial mySerial(4, 3); // RX | TX
@@ -88,6 +88,8 @@ int AVCLanBT::available()
 void AVCLanBT::checkCommand( char command )
 //--------------------------------------------------------------------------------
 {
+//  Serial.print("command:"); Serial.println(command);
+
   if ( (command == '@')  && !startCommand ) {
     startCommand = true;
     command_i = 0;
@@ -107,7 +109,7 @@ void AVCLanBT::checkCommand( char command )
     } else if ( 0 == strcmp( command_buff, "s" ) ) {
       EEPROM.write( E_LOGG, (int)logging );
       EEPROM.write( E_DISPLAY, dispalyStatus );
-      mySerial.println("#Store");
+      mySerial.print("#S:"); mySerial.print(logging); mySerial.print(":"); mySerial.println(dispalyStatus);
     } else if ( 0 == strcmp( command_buff, "d0" ) ) {
       dispalyStatus = 0;
       mySerial.println("#D0");
@@ -118,7 +120,7 @@ void AVCLanBT::checkCommand( char command )
       dispalyStatus = 2;
       mySerial.println("#D2");
     }
-    println(command_buff);
+    // println(command_buff);
   }
 }
 
@@ -209,8 +211,8 @@ void AVCLanBT::EERPOM_read_config()
   if ( EEPROM.read(E_LOGG) == 1 ) logging = true;
   dispalyStatus = EEPROM.read(E_DISPLAY);
 
-  logging ? mySerial.println(">>Logging ON<<") : mySerial.println(">>Logging OFF<<");
-  mySerial.print("DisplStatus:"); mySerial.println(dispalyStatus);
+  logging ? mySerial.println("Log+;") : mySerial.println("Log-;");
+  mySerial.print("Disp:"); mySerial.println(dispalyStatus);
 }
 
 AVCLanBT avclanBT;

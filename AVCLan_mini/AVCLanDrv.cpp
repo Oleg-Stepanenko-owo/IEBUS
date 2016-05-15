@@ -199,7 +199,7 @@ byte AVCLanDrv::readMessage ()
   {
     while (!avclan.isAvcBusFree());
   }
-  // else avclan.printMessage(true);
+  else avclan.printMessage(true);
   return res;
 }
 
@@ -538,8 +538,8 @@ void AVCLanDrv::printMessage(bool incoming)
 byte AVCLanDrv::getActionID(const AvcInCmdTable messageTable[], byte mtSize)
 //--------------------------------------------------------------------------------
 {
-  if ( ((slaveAddress != deviceAddress) && (slaveAddress != 0x0FFF))
-       || (( dataSize < 8) || (dataSize > 10 )) ) {
+  if ( ((dataSize < 8) && ( dataSize != 6 )) || (dataSize > 10 ) ) {
+    avclanBT.println("#18");
     return ACT_NONE;
   }
 
@@ -548,13 +548,19 @@ byte AVCLanDrv::getActionID(const AvcInCmdTable messageTable[], byte mtSize)
   if (dataSize == 6) 		idx = 0;
   else if (dataSize == 8) 	idx = 1;
   else if (dataSize == 9) 	idx = 7;
-  else 						idx = 10;
+  else 						   idx = 10;
 
   for (; idx < mtSize; ++idx) {
-    if (dataSize != pgm_read_byte_near(&messageTable[idx].dataSize)) return ACT_NONE; // Because first unsized value from other range
+    if (dataSize != pgm_read_byte_near(&messageTable[idx].dataSize)) {
+      avclanBT.println("#19");
+      return ACT_NONE; // Because first unsized value from other range
+    }
 
     if ( message[dataSize - 1] == pgm_read_byte_near(&messageTable[idx].command) )
+    {
+      avclanBT.println("#20");
       return pgm_read_byte_near( &messageTable[idx].actionID );
+    }
   }
   return ACT_NONE;
 }

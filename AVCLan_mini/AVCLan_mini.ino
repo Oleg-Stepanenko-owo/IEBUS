@@ -40,6 +40,10 @@ int  error_count;
 // #14 - so many error comes
 // #15 - after wait try to show honda display
 // #16 - Set setHondaDis value false
+// #17 - call getActionID function
+// #18 - ((dataSize < 8) && ( dataSize != 6 )) || (dataSize > 10 ) // for fast action pars
+// #19 - return NOT Action find
+// #20 - Action find OK
 
 //--------------------------------------------------------------------------------
 void setup()
@@ -49,6 +53,8 @@ void setup()
   LED_ON;
 
   // Serial.begin(9600);
+//  Serial.print("Init by 9600");
+
   avclan.begin();
   avclanHonda.begin();
   errorID = 0;
@@ -66,18 +72,19 @@ void setup()
 void loop()
 //--------------------------------------------------------------------------------
 {
+  //  int len = 0; //avclanBT.available();
   if ( avclanBT.available() )
   {
-    int len = avclanBT.available();
-    for (int i = 0; i < len; i++) avclanBT.checkCommand(avclanBT.read());
+//    Serial.print("available");
+    avclanBT.checkCommand(avclanBT.read());
   }
 
-  if( 1 == avclanBT.getDisplayStatus() ){
-        HONDA_DIS_ON;
-        LED_ON;
-  } else if ( 2 == avclanBT.getDisplayStatus() ){
-        HONDA_DIS_OFF;
-        LED_OFF;
+  if ( 1 == avclanBT.getDisplayStatus() ) {
+    HONDA_DIS_ON;
+    LED_ON;
+  } else if ( 2 == avclanBT.getDisplayStatus() ) {
+    HONDA_DIS_OFF;
+    LED_OFF;
   }
 
   // First 5 sec should be Honda logo
@@ -104,8 +111,6 @@ void loop()
     {
       // LED_OFF;
       error_count = 0;
-
-      avclan.printMessage(true);
       avclanHonda.getActionID();
 
       if ( avclan.actionID != ACT_NONE )
