@@ -1,4 +1,4 @@
-#define IEBUS_VERSION "0.9"
+#define IEBUS_VERSION "0.91"
 
 // type of AVCLan hardwire driver
 #define AVCLAN_PCA82C250

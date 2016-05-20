@@ -100,7 +100,10 @@ byte AVCLanDrv::_readMessage ()
   if (t < AVC_START_BIT_HOLD_ON_MIN_LENGTH) {
     //if (t < 0x16){
     SREG = oldSREG;
+    avclanBT.print("t2:"); avclanBT.println("t");
     return 2;
+  } else {
+    avclanBT.print("t2:"); avclanBT.println("t");
   }
 
   broadcast = readBits(1);

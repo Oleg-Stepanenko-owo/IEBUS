@@ -82,9 +82,11 @@ void loop()
   if ( 1 == avclanBT.getDisplayStatus() ) {
     HONDA_DIS_ON;
     LED_ON;
+    return;
   } else if ( 2 == avclanBT.getDisplayStatus() ) {
     HONDA_DIS_OFF;
     LED_OFF;
+    return;
   }
 
   // First 5 sec should be Honda logo
